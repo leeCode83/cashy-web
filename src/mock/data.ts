@@ -43,23 +43,70 @@ export interface Advance {
   status: AdvanceStatus
 }
 
-/** Row in the creator's activity list / history. */
+/** What kind of event a log row records; drives the icon and the filters. */
+export type HistoryKind = 'cash-out' | 'repayment' | 'verification' | 'balance'
+
+/** Row in the creator's transaction log. */
 export interface HistoryEntry {
   id: string
   /** ISO date, rendered with Intl.DateTimeFormat('en-US'). */
   date: string
+  kind: HistoryKind
   /** One-line description, e.g. `Cash out`. */
   label: string
+  /** Plain-words detail shown under the label. */
+  detail: string
+  /**
+   * Money involved, in cents. Positive for money in, negative for money
+   * out, zero when nothing moved (a pure verification event).
+   */
   amountCents: number
-  status: AdvanceStatus | 'posted'
+  status: AdvanceStatus | 'posted' | 'rejected' | 'verified' | 'success'
 }
 
-/** Seeded history so the demo never shows an empty table uninvited. */
+/**
+ * Seeded log so the demo opens with a lived-in history: successes, a
+ * posting, and one rejected request, all consistent with the fee math
+ * (repay = principal × 1.025).
+ */
 export const seedHistory: HistoryEntry[] = [
-  { id: 'h1', date: '2026-09-21', label: 'Advance repaid', amountCents: 400_000_000, status: 'repaid' },
-  { id: 'h2', date: '2026-08-21', label: 'Advance repaid', amountCents: 350_000_000, status: 'repaid' },
-  { id: 'h3', date: '2026-07-21', label: 'Advance repaid', amountCents: 380_000_000, status: 'repaid' },
+  { id: 'h1', date: '2026-09-21', kind: 'repayment', label: 'Advance repaid', detail: 'Collected from your linked payout account, on time.', amountCents: -410_000_000, status: 'repaid' },
+  { id: 'h9', date: '2026-09-18', kind: 'verification', label: 'AdSense verified', detail: 'Balance sealed for this session. Only the result is shared.', amountCents: 0, status: 'verified' },
+  { id: 'h2', date: '2026-09-18', kind: 'cash-out', label: 'Cash out', detail: 'Sent to your payout account the same afternoon.', amountCents: 400_000_000, status: 'success' },
+  { id: 'h3', date: '2026-09-03', kind: 'balance', label: 'Final balance posted', detail: 'Google posted your AdSense balance for September.', amountCents: 840_000_000, status: 'posted' },
+  { id: 'h4', date: '2026-08-21', kind: 'repayment', label: 'Advance repaid', detail: 'Collected from your linked payout account, on time.', amountCents: -358_750_000, status: 'repaid' },
+  { id: 'h5', date: '2026-08-19', kind: 'cash-out', label: 'Cash out declined', detail: 'This payout was already funded by another lender. Nothing was charged.', amountCents: 650_000_000, status: 'rejected' },
+  { id: 'h6', date: '2026-08-03', kind: 'balance', label: 'Final balance posted', detail: 'Google posted your AdSense balance for August.', amountCents: 821_200_000, status: 'posted' },
+  { id: 'h7', date: '2026-07-21', kind: 'repayment', label: 'Advance repaid', detail: 'Collected from your linked payout account, on time.', amountCents: -389_500_000, status: 'repaid' },
+  { id: 'h8', date: '2026-07-18', kind: 'cash-out', label: 'Cash out', detail: 'Sent to your payout account the same afternoon.', amountCents: 380_000_000, status: 'success' },
 ]
+
+/**
+ * Bureau System (brief: rule-based, six normalized channel traits). Scores
+ * are 0..1 where higher is better; the dashboard jitters around these bases
+ * so the panel reads as a live recompute.
+ */
+export interface BureauTrait {
+  id: string
+  label: string
+  detail: string
+  base: number
+}
+
+export const bureauTraits: BureauTrait[] = [
+  { id: 'steadiness', label: 'Earnings steadiness', detail: 'How even your monthly payouts are', base: 0.82 },
+  { id: 'trend', label: 'Income trend', detail: 'Twelve-month direction of your payouts', base: 0.74 },
+  { id: 'uploads', label: 'Upload consistency', detail: 'Average gap between uploads', base: 0.88 },
+  { id: 'anomalies', label: 'Traffic pattern', detail: 'Views outside your normal range', base: 0.91 },
+  { id: 'mom', label: 'Month over month', detail: 'This month against the last three', base: 0.69 },
+  { id: 'niche', label: 'Topic durability', detail: 'How evergreen your niche is', base: 0.77 },
+]
+
+/** The rule-based conclusion under the six traits. */
+export const bureauVerdict = {
+  headline: 'Steady earner',
+  body: 'Your last 12 months support a 70% limit. Keep uploading on schedule to hold it.',
+} as const
 
 /** A vault tranche. Junior is never preselected and demands a risk ack. */
 export type TierId = 'senior' | 'junior' | 'reserve'

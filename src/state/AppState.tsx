@@ -29,7 +29,15 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const startAdvance = (newAdvance: Advance): void => {
     setAdvance(newAdvance)
     setHistory((rows) => [
-      { id: nextHistoryId(), date: new Date().toISOString(), label: 'Cash out', amountCents: newAdvance.principalCents, status: 'active' },
+      {
+        id: nextHistoryId(),
+        date: new Date().toISOString(),
+        kind: 'cash-out',
+        label: 'Cash out',
+        detail: 'Sent to your payout account. Collects on Oct 21.',
+        amountCents: newAdvance.principalCents,
+        status: 'active',
+      },
       ...rows,
     ])
   }
@@ -37,7 +45,15 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const markRepaid = (repayCents: number): void => {
     setAdvance((current) => (current ? { ...current, status: 'repaid' } : current))
     setHistory((rows) => [
-      { id: nextHistoryId(), date: new Date().toISOString(), label: 'Advance repaid', amountCents: repayCents, status: 'repaid' },
+      {
+        id: nextHistoryId(),
+        date: new Date().toISOString(),
+        kind: 'repayment',
+        label: 'Advance repaid',
+        detail: 'Collected from your linked payout account.',
+        amountCents: -repayCents,
+        status: 'repaid',
+      },
       ...rows,
     ])
   }
