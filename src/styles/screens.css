@@ -3,17 +3,17 @@
 
 /* Page scaffolding */
 .page {
-  padding-block: var(--space-6);
+  padding-block: var(--space-7);
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-6);
 }
 
 .page__title {
   font-family: var(--font-display);
-  font-size: var(--text-28);
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-size: clamp(1.75rem, 3vw, var(--text-28));
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .main {
@@ -284,9 +284,9 @@
 }
 
 .stepper__step--active .stepper__icon {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--canvas);
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
 }
 
 .stepper__step--done .stepper__icon {
@@ -432,10 +432,12 @@
   font-size: var(--text-14);
   font-weight: 500;
   cursor: pointer;
+  transition: background-color 120ms ease, border-color 120ms ease;
 }
 
 .chip-btn:hover {
   background: var(--surface);
+  border-color: var(--ink-muted);
 }
 
 .review-grid {
@@ -455,7 +457,7 @@
   justify-content: space-between;
   align-items: baseline;
   gap: var(--space-4);
-  padding-block: var(--space-3);
+  padding-block: var(--space-4);
   border-bottom: 1px solid var(--line);
 }
 
@@ -514,15 +516,17 @@
 }
 
 .dash-hero__amount {
-  font-size: var(--text-40);
-  font-weight: 500;
-  letter-spacing: -0.01em;
+  font-size: clamp(2.25rem, 4vw, 3rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
   overflow-wrap: anywhere;
 }
 
 .section-title {
+  font-family: var(--font-display);
   font-size: var(--text-20);
   font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 /* Skeleton */
@@ -660,6 +664,11 @@
   min-width: 0;
 }
 
+.vault-stats .u-mono {
+  font-size: var(--text-20);
+  font-weight: 600;
+}
+
 .vault-grid {
   display: grid;
   grid-template-columns: 1fr 340px;
@@ -684,21 +693,23 @@
   align-items: flex-start;
   gap: var(--space-1);
   text-align: left;
-  padding: var(--space-4);
+  padding: var(--space-5);
   border: 1px solid var(--line);
   border-radius: var(--radius-card);
   background: var(--canvas);
   cursor: pointer;
-  transition: border-color 120ms ease, background-color 120ms ease;
+  transition: border-color 120ms ease, background-color 120ms ease, translate 140ms ease, box-shadow 140ms ease;
 }
 
 .tier:hover {
   background: var(--surface);
+  translate: 0 -2px;
+  box-shadow: 0 6px 18px rgba(14, 17, 22, 0.08);
 }
 
 .tier--selected {
-  border-color: var(--accent);
-  box-shadow: inset 0 0 0 1px var(--accent);
+  border-color: var(--accent-strong);
+  box-shadow: inset 0 0 0 1px var(--accent-strong);
 }
 
 .tier__name {
