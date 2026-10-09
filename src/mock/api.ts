@@ -8,10 +8,21 @@
 /** Demo scenario codes understood by the mock API. */
 export type DemoCode = 'link-fail' | 'funded' | 'repay-fail'
 
-/** Read the demo override from the URL, if any. */
+/**
+ * Demo scenario pinning. The query must work even after client-side
+ * navigation strips it, so the scenario is captured once at module init —
+ * at that moment the URL is exactly what the judge loaded — and stays
+ * pinned for the session. A later `?demo=` in the URL re-pins it.
+ */
+const INITIAL_DEMO = new URLSearchParams(window.location.search).get('demo')
+let pinnedScenario: DemoCode | null =
+  INITIAL_DEMO === 'link-fail' || INITIAL_DEMO === 'funded' || INITIAL_DEMO === 'repay-fail' ? INITIAL_DEMO : null
+
+/** Read the demo override for this session. */
 export function demoScenario(): DemoCode | null {
   const value = new URLSearchParams(window.location.search).get('demo')
-  return value === 'link-fail' || value === 'funded' || value === 'repay-fail' ? value : null
+  if (value === 'link-fail' || value === 'funded' || value === 'repay-fail') pinnedScenario = value
+  return pinnedScenario
 }
 
 /**

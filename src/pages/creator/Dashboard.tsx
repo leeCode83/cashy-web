@@ -40,6 +40,7 @@ export default function Dashboard() {
   if (loading) return <Skeleton />
 
   const repayFailed = advance !== null && repayState === 'idle' && demoScenario() === 'repay-fail'
+  const advanceIsLive = advance !== null && advance.status === 'active'
   const repayBanner =
     repayState === 'repaid'
       ? {
@@ -51,7 +52,7 @@ export default function Dashboard() {
         }
       : repayFailed
         ? { kind: 'error' as const, text: messages.creator.repayFailed }
-        : advance !== null && advance.status === 'active'
+        : advanceIsLive
           ? { kind: 'info' as const, text: messages.creator.repayScheduled(formatIDRX(advance.repayCents)) }
           : null
 
@@ -97,7 +98,7 @@ export default function Dashboard() {
               </div>
             </div>
           )}
-          {advance === null && verifiedMethod !== null && (
+          {!advanceIsLive && verifiedMethod !== null && (
             <div className="stack">
               <p className="muted small">Ready to cash out</p>
               <p className="dash-hero__amount u-mono">{formatIDRX(creator.finalBalanceCents)}</p>
@@ -123,7 +124,7 @@ export default function Dashboard() {
               </div>
             </div>
           )}
-          {advance !== null && (
+          {advanceIsLive && (
             <div className="stack">
               <p className="muted small">Active advance</p>
               <p className="dash-hero__amount u-mono">{formatIDRX(advance.principalCents)}</p>
@@ -150,8 +151,9 @@ export default function Dashboard() {
         {advance !== null && (
           <section className="card stack" aria-label="Advance detail">
             <h2 className="section-title">Advance</h2>
-            <p className="muted small">
-              {formatIDRX(advance.principalCents)} advanced · {formatIDRX(advance.repayCents)} collected on Oct 21.
+            <p className="muted small row">
+              {formatIDRX(advance.principalCents)} advanced · {formatIDRX(advance.repayCents)} collected on Oct 21.{' '}
+              <StatusChip kind={advance.status === 'repaid' ? 'success' : 'info'} label={advance.status === 'repaid' ? 'Repaid' : 'Active'} />
             </p>
           </section>
         )}
