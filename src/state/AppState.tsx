@@ -24,6 +24,7 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
   const [history, setHistory] = useState<HistoryEntry[]>(seedHistory)
   const [lpConnected, setLpConnected] = useState(false)
   const [lpPositions, setLpPositions] = useState<LpPosition[]>([])
+  const [amountDraft, setAmountDraft] = useState('')
 
   const startAdvance = (newAdvance: Advance): void => {
     setAdvance(newAdvance)
@@ -58,6 +59,8 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       value={{
         verifiedMethod,
         setVerifiedMethod,
+        amountDraft,
+        setAmountDraft,
         advance,
         startAdvance,
         markRepaid,

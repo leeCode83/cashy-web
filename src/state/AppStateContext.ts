@@ -18,11 +18,14 @@ export interface AppState {
   lpConnected: boolean
   /** LP positions per tier. */
   lpPositions: LpPosition[]
+  /** Raw text of the amount input, kept so Back never clears it. */
+  amountDraft: string
 }
 
 /** Actions the app can perform on session state. */
 export interface AppActions {
   setVerifiedMethod: (method: VerifyMethod) => void
+  setAmountDraft: (draft: string) => void
   /** Record a new advance and log the cash-out in history. */
   startAdvance: (advance: Advance) => void
   /** Mark the active advance repaid and log it. */
