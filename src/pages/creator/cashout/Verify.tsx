@@ -1,8 +1,9 @@
 /**
  * Step 1 — Verify (brief §6.3). One task: seal the AdSense session and see
- * the final balance. States in order: waiting for sign-in → sealing →
- * verified, with cancel and the Analytics fallback path. What is shared and
- * what is never seen is spelled out on screen.
+ * the final balance. The number comes from a real zkTLS proof (Reclaim,
+ * `src/lib/zktls.ts`); `?demo=mock` and the Analytics fallback run the
+ * prerecorded mock path instead. States in order: waiting for sign-in →
+ * sealing → verified, with cancel and an error phase when the proof fails.
  */
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
@@ -12,10 +13,18 @@ import { verifyAdSense } from '../../../mock/api.ts'
 import type { VerifyMethod } from '../../../mock/api.ts'
 import { creator, limitFor } from '../../../mock/data.ts'
 import { formatIDRX, formatPercent } from '../../../lib/money.ts'
+import { verifyAdSenseZk, ZkTlsError } from '../../../lib/zktls.ts'
 import { useAppState } from '../../../state/AppStateContext.ts'
 
 /** Phases of the verify step. */
-type Phase = 'idle' | 'waiting' | 'sealing' | 'slow' | 'verified' | 'cancelled'
+type Phase = 'idle' | 'waiting' | 'sealing' | 'slow' | 'verified' | 'cancelled' | 'error'
+
+/**
+ * Demo fallback: `?demo=mock` pins the prerecorded result so the demo works
+ * without the extension or connectivity (brief §8). Captured at module init
+ * — the moment the judge loads the URL — same as the mock API scenarios.
+ */
+const DEMO_MOCK = new URLSearchParams(window.location.search).get('demo') === 'mock'
 
 /** Sign-in beat before sealing starts, in ms. */
 const SIGN_IN_MS = 1_200
@@ -24,13 +33,16 @@ const SLOW_MS = 10_000
 
 export default function Verify() {
   const navigate = useNavigate()
-  const { verifiedMethod, setVerifiedMethod } = useAppState()
+  const { verifiedMethod, setVerifiedMethod, verifiedBalanceCents, setVerifiedBalance } = useAppState()
   const [phase, setPhase] = useState<Phase>(verifiedMethod !== null ? 'verified' : 'idle')
   const [method, setMethod] = useState<VerifyMethod>('adsense')
   /** A cancelled run must not be able to write its result. */
   const runId = useRef(0)
 
-  const balance = formatIDRX(creator.finalBalanceCents)
+  // The proven balance when present; the mock figure keeps every screen
+  // working before the first verification of the session.
+  const balanceCents = verifiedBalanceCents ?? creator.finalBalanceCents
+  const balance = formatIDRX(balanceCents)
 
   useEffect(() => {
     if (phase === 'waiting') {
@@ -40,16 +52,29 @@ export default function Verify() {
     if (phase !== 'sealing') return
     const id = runId.current
     const startedAt = Date.now()
-    void verifyAdSense(method).then((result) => {
-      if (runId.current !== id) return
-      setVerifiedMethod(result.method)
-      setPhase('verified')
-    })
+    // Analytics and the demo fallback are inherently prerecorded; only the
+    // real AdSense path goes through Reclaim.
+    const runMock = DEMO_MOCK || method === 'analytics'
+    void (async () => {
+      try {
+        const result = runMock
+          ? await verifyAdSense(method)
+          : { ...(await verifyAdSenseZk()), method: 'adsense' as const }
+        if (runId.current !== id) return
+        setVerifiedMethod(result.method)
+        setVerifiedBalance(result.finalBalanceCents, runMock ? 'mock' : 'zktls')
+        setPhase('verified')
+      } catch (err) {
+        if (runId.current !== id) return
+        console.error('verify failed:', err instanceof ZkTlsError ? err.failure : err)
+        setPhase('error')
+      }
+    })()
     const slowTimer = window.setTimeout(() => {
       if (runId.current === id && Date.now() - startedAt >= SLOW_MS) setPhase('slow')
     }, SLOW_MS)
     return () => window.clearTimeout(slowTimer)
-  }, [phase, method, setVerifiedMethod])
+  }, [phase, method, setVerifiedMethod, setVerifiedBalance])
 
   const start = (next: VerifyMethod): void => {
     setMethod(next)
@@ -132,13 +157,21 @@ export default function Verify() {
         </StatusCard>
       )}
 
+      {phase === 'error' && (
+        <StatusCard kind="error" title={messages.verify.sealFailed.title} body={messages.verify.sealFailed.body}>
+          <button type="button" className="btn btn--secondary" onClick={() => start(method)}>
+            {messages.verify.sealFailed.action}
+          </button>
+        </StatusCard>
+      )}
+
       {phase === 'verified' && (
         <>
           <StatusCard kind="success" title={messages.verify.verified(balance).title} body={messages.verify.verified(balance).body} />
           {verifiedMethod === 'analytics' && (
             <p className="muted small">
               Verified through YouTube Analytics: you can take up to {formatPercent(creator.analyticsLimitBps)} of your
-              balance ({formatIDRX(limitFor(creator.finalBalanceCents, creator.analyticsLimitBps))}).
+              balance ({formatIDRX(limitFor(balanceCents, creator.analyticsLimitBps))}).
             </p>
           )}
           <div>
