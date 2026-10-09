@@ -1,0 +1,60 @@
+/**
+ * Design tokens — single source of truth for the visual language.
+ * Values come from `docs/cashy-ui-ux-design-brief.md` §4 (identity).
+ * Never hardcode these values elsewhere; always reference the custom property.
+ */
+:root {
+  color-scheme: light;
+
+  /* Palette */
+  --canvas: #ffffff;
+  --surface: #f4f5f7;
+  --ink: #0e1116;
+  --ink-muted: #475467;
+  --line: #e4e7ec;
+  /* Accent carries the primary CTA, the rail and key markers. Text on accent is ink (6.1:1). */
+  --accent: #ff5a1f;
+  --accent-ink: var(--ink);
+
+  /* Status colors — always paired with an icon and a text label. */
+  --ok: #067647;
+  --ok-bg: #ecfdf3;
+  --error: #b42318;
+  --error-bg: #fef3f2;
+  --wait: #93370d;
+  --wait-bg: #fffaeb;
+  --info: #175cd3;
+  --info-bg: #eff8ff;
+
+  /* Typography */
+  --font-display: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-ui: 'Geist', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'Cascadia Mono', monospace;
+
+  /* Type scale (px) — 12 / 14 / 16 / 20 / 28 / 40 / 56 */
+  --text-12: 0.75rem;
+  --text-14: 0.875rem;
+  --text-16: 1rem;
+  --text-20: 1.25rem;
+  --text-28: 1.75rem;
+  --text-40: 2.5rem;
+  --text-56: 3.5rem;
+
+  /* Shape */
+  --radius-control: 10px;
+  --radius-card: 16px;
+  --radius-pill: 999px;
+
+  /* Space scale (px) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* Layout */
+  --content-max: 1080px;
+}
