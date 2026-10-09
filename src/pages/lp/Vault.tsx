@@ -116,6 +116,7 @@ export default function Vault() {
                   type="button"
                   className={`tier${selected ? ' tier--selected' : ''}`}
                   aria-pressed={selected}
+                  data-risk={candidate.risk.toLowerCase()}
                   onClick={() => selectTier(candidate.id)}
                 >
                   <span className="tier__name">

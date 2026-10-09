@@ -61,25 +61,27 @@ export default function Done() {
       </div>
 
       <dialog ref={receiptRef} className="receipt" aria-label="Receipt">
-        <div className="stack">
-          <h2 className="page__title">Receipt</h2>
-          <div className="summary">
-            <div className="summary__row">
-              <span className="muted">You received</span>
-              <span className="summary__amount">{amount}</span>
+        <div className="card--shell">
+          <div className="card--core stack">
+            <h2 className="page__title">Receipt</h2>
+            <div className="summary">
+              <div className="summary__row">
+                <span className="muted">You received</span>
+                <span className="summary__amount">{amount}</span>
+              </div>
+              <div className="summary__row">
+                <span className="muted">Fee — flat, no interest</span>
+                <span className="summary__amount">{formatIDRX(advance.feeCents)}</span>
+              </div>
+              <div className="summary__row">
+                <span className="muted">Collected on Oct 21</span>
+                <span className="summary__amount">{repay}</span>
+              </div>
             </div>
-            <div className="summary__row">
-              <span className="muted">Fee — flat, no interest</span>
-              <span className="summary__amount">{formatIDRX(advance.feeCents)}</span>
-            </div>
-            <div className="summary__row">
-              <span className="muted">Collected on Oct 21</span>
-              <span className="summary__amount">{repay}</span>
-            </div>
+            <button type="button" className="btn btn--secondary" onClick={() => receiptRef.current?.close()}>
+              Close
+            </button>
           </div>
-          <button type="button" className="btn btn--secondary" onClick={() => receiptRef.current?.close()}>
-            Close
-          </button>
         </div>
       </dialog>
     </div>

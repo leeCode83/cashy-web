@@ -8,6 +8,7 @@ import { useRef, useState } from 'react'
 import type { KeyboardEvent, PointerEvent } from 'react'
 import { Link } from 'react-router'
 import { formatIDRX } from '../lib/money.ts'
+import { useScrollReveal } from '../lib/useScrollReveal.ts'
 
 /** Hero mock figures (brief §5). */
 const DEMO = {
@@ -88,6 +89,11 @@ const STEPS = [
 ]
 
 export default function Landing() {
+  const demoRef = useScrollReveal<HTMLDivElement>()
+  const howRef = useScrollReveal<HTMLElement>()
+  const compareRef = useScrollReveal<HTMLElement>()
+  const onchainRef = useScrollReveal<HTMLElement>()
+
   return (
     <div className="landing">
       <section className="container hero">
@@ -106,12 +112,12 @@ export default function Landing() {
             </Link>
           </div>
         </div>
-        <div className="hero__demo card">
+        <div ref={demoRef} className="hero__demo card reveal">
           <LandingRail />
         </div>
       </section>
 
-      <section className="container landing__section" id="how" aria-label="How it works">
+      <section ref={howRef} className="container landing__section reveal" id="how" aria-label="How it works">
         <h2 className="section-title">How it works</h2>
         <ol className="steps">
           {STEPS.map((step, index) => (
@@ -125,7 +131,7 @@ export default function Landing() {
         </ol>
       </section>
 
-      <section className="container landing__section" aria-label="Why not a payday loan">
+      <section ref={compareRef} className="container landing__section reveal" aria-label="Why not a payday loan">
         <h2 className="section-title">Why not a payday loan</h2>
         <table className="compare">
           <thead>
@@ -159,7 +165,7 @@ export default function Landing() {
         </table>
       </section>
 
-      <section className="container landing__section" aria-label="Why onchain">
+      <section ref={onchainRef} className="container landing__section reveal" aria-label="Why onchain">
         <h2 className="section-title">Why onchain</h2>
         <p className="muted">
           Advances, deposits and repayments settle onchain in IDRX, so every number you see can be verified by anyone.{' '}

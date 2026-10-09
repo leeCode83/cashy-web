@@ -86,54 +86,56 @@ export default function Dashboard() {
       )}
 
       <div className="dash-grid">
-        <section className="card dash-hero" aria-label="Cash out">
-          {advance === null && verifiedMethod === null && (
-            <div className="stack">
-              <h2>Ready in one step</h2>
-              <p className="muted">Verify your AdSense balance to see what you can cash out today.</p>
-              <div>
-                <button type="button" className="btn btn--primary" onClick={() => navigate('/creator/cash-out/verify')}>
-                  Verify AdSense
-                </button>
+        <section className="card--shell dash-hero" aria-label="Cash out">
+          <div className="card--core">
+            {advance === null && verifiedMethod === null && (
+              <div className="stack">
+                <h2>Ready in one step</h2>
+                <p className="muted">Verify your AdSense balance to see what you can cash out today.</p>
+                <div>
+                  <button type="button" className="btn btn--primary" onClick={() => navigate('/creator/cash-out/verify')}>
+                    Verify AdSense
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
-          {!advanceIsLive && verifiedMethod !== null && (
-            <div className="stack">
-              <p className="muted small">Ready to cash out</p>
-              <p className="dash-hero__amount u-mono">{formatIDRX(creator.finalBalanceCents)}</p>
-              <p className="muted">
-                Final balance. You can take up to{' '}
-                <strong className="u-mono">
-                  {formatIDRX(limitFor(creator.finalBalanceCents, verifiedMethod === 'analytics' ? creator.analyticsLimitBps : creator.limitBps))}
-                </strong>
-                <details className="popover">
-                  <summary className="popover__summary popover__title">
-                    {' '}
-                    Why this limit? <Info size={14} aria-hidden />
-                  </summary>
-                  <div className="popover__panel">
-                    <p className="popover__body">{messages.amount.whyLimit.body}</p>
-                  </div>
-                </details>
-              </p>
-              <div>
-                <button type="button" className="btn btn--primary" onClick={() => navigate('/creator/cash-out/verify')}>
-                  Cash Out
-                </button>
+            )}
+            {!advanceIsLive && verifiedMethod !== null && (
+              <div className="stack">
+                <p className="muted small">Ready to cash out</p>
+                <p className="dash-hero__amount u-mono">{formatIDRX(creator.finalBalanceCents)}</p>
+                <p className="muted">
+                  Final balance. You can take up to{' '}
+                  <strong className="u-mono">
+                    {formatIDRX(limitFor(creator.finalBalanceCents, verifiedMethod === 'analytics' ? creator.analyticsLimitBps : creator.limitBps))}
+                  </strong>
+                  <details className="popover">
+                    <summary className="popover__summary popover__title">
+                      {' '}
+                      Why this limit? <Info size={14} aria-hidden />
+                    </summary>
+                    <div className="popover__panel">
+                      <p className="popover__body">{messages.amount.whyLimit.body}</p>
+                    </div>
+                  </details>
+                </p>
+                <div>
+                  <button type="button" className="btn btn--primary" onClick={() => navigate('/creator/cash-out/verify')}>
+                    Cash Out
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
-          {advanceIsLive && (
-            <div className="stack">
-              <p className="muted small">Active advance</p>
-              <p className="dash-hero__amount u-mono">{formatIDRX(advance.principalCents)}</p>
-              <p className="muted row">
-                Repays on Oct 21. <StatusChip kind="info" label="Active" />
-              </p>
-              <p className="muted small">{messages.creator.activeAdvanceHint}</p>
-            </div>
-          )}
+            )}
+            {advanceIsLive && (
+              <div className="stack">
+                <p className="muted small">Active advance</p>
+                <p className="dash-hero__amount u-mono">{formatIDRX(advance.principalCents)}</p>
+                <p className="muted row">
+                  Repays on Oct 21. <StatusChip kind="info" label="Active" />
+                </p>
+                <p className="muted small">{messages.creator.activeAdvanceHint}</p>
+              </div>
+            )}
+          </div>
         </section>
 
         <section className="card" aria-label="Payday rail">

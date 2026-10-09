@@ -75,6 +75,18 @@ a {
   top: var(--space-4);
 }
 
+/* Scroll-entry reveal — Landing only (see useScrollReveal). */
+.reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity var(--motion-slow) var(--ease-out), transform var(--motion-slow) var(--ease-out);
+}
+
+.reveal--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 /* Motion is transform/opacity only and honors the user preference. */
 @media (prefers-reduced-motion: reduce) {
   *,

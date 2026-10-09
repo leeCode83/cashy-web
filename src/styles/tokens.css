@@ -57,4 +57,18 @@
 
   /* Layout */
   --content-max: 1080px;
+
+  /* Elevation — ultra-diffuse, ink-tinted. Flat bordered cards stay at zero shadow. */
+  --shadow-sm: 0 1px 2px rgba(14, 17, 22, 0.04), 0 4px 12px rgba(14, 17, 22, 0.04);
+  --shadow-md: 0 2px 4px rgba(14, 17, 22, 0.04), 0 12px 32px rgba(14, 17, 22, 0.08);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-fast: 150ms;
+  --motion-base: 240ms;
+  --motion-slow: 400ms;
+
+  /* Double-bezel "shell" nesting — used sparingly, see components.css */
+  --shell-pad: 6px;
+  --shell-radius: calc(var(--radius-card) + var(--shell-pad));
 }

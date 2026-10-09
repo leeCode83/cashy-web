@@ -55,7 +55,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           onFocus={pause}
           onBlur={resume}
         >
-          <CheckCircle size={16} aria-hidden />
+          <CheckCircle size={16} aria-hidden style={{ color: 'var(--ok)' }} />
           <p className="toast__text">{toast.text}</p>
           <button type="button" className="toast__close" aria-label="Dismiss" onClick={() => setToast(null)}>
             <X size={14} aria-hidden />

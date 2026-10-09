@@ -82,22 +82,24 @@ export default function Review() {
 
       <div className="review-grid">
         <section className="stack" aria-label="Summary">
-          <div className="card summary">
-            <div className="summary__row">
-              <span className="muted">You get today</span>
-              <span className="summary__amount">{formatIDRX(principal ?? 0)}</span>
-            </div>
-            <div className="summary__row">
-              <span className="muted">Fee — flat, no interest</span>
-              <span className="summary__amount">{formatIDRX(fee)}</span>
-            </div>
-            <div className="summary__row">
-              <span className="muted">Repaid on Oct 21</span>
-              <span className="summary__amount">{formatIDRX(repay)}</span>
-            </div>
-            <div className="summary__row">
-              <span className="muted">You keep from your payout</span>
-              <span className="summary__amount">{formatIDRX(keep)}</span>
+          <div className="card--shell">
+            <div className="card--core summary">
+              <div className="summary__row">
+                <span className="muted">You get today</span>
+                <span className="summary__amount">{formatIDRX(principal ?? 0)}</span>
+              </div>
+              <div className="summary__row">
+                <span className="muted">Fee — flat, no interest</span>
+                <span className="summary__amount">{formatIDRX(fee)}</span>
+              </div>
+              <div className="summary__row">
+                <span className="muted">Repaid on Oct 21</span>
+                <span className="summary__amount">{formatIDRX(repay)}</span>
+              </div>
+              <div className="summary__row">
+                <span className="muted">You keep from your payout</span>
+                <span className="summary__amount">{formatIDRX(keep)}</span>
+              </div>
             </div>
           </div>
           <PaydayRail
