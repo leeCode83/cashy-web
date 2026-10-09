@@ -103,27 +103,35 @@ function Starburst({ size, className }: { size: number; className?: string }) {
   )
 }
 
-/** The four steps, one card each. */
+/** The four steps; wide cells get room to breathe in the bento grid. */
 const STEPS = [
   {
     name: 'Verify',
     Icon: Fingerprint,
     text: 'Seal your AdSense session — balance only, never your password.',
+    chip: 'Never your password',
+    wide: true,
   },
   {
     name: 'Choose',
     Icon: SlidersHorizontal,
     text: 'Pick an amount up to 70% of your final balance. Fee shown up front.',
+    chip: '25% · 50% · Max',
+    wide: false,
   },
   {
     name: 'Review',
     Icon: ClipboardText,
     text: 'Link your payout account and confirm the Oct 21 repayment.',
+    chip: 'Repay Oct 21',
+    wide: false,
   },
   {
     name: 'Done',
     Icon: Lightning,
     text: 'Money lands today. Repayment collects itself on the 21st.',
+    chip: 'No interest. Ever.',
+    wide: true,
   },
 ] as const
 
@@ -137,25 +145,28 @@ const STATS = [
 /** Creator-type marquee chips. */
 const TYPES = ['VTuber', 'Podcaster', 'Illustrator', 'Educator', 'Streamer', 'Musician', 'Writer', 'Reviewer'] as const
 
-/** Creator quotes — believable names, no stock-photo faces. */
+/** Creator quotes — featured on lime, the rest stacked beside it. */
 const QUOTES = [
   {
     initial: 'R',
     name: 'Rani',
     meta: '412K subscribers · Bandung',
     quote: 'The fee showed up before I tapped anything. 2.5%, done — no daily interest eating my payout.',
+    cashedOut: formatIDRX(500_000_000),
   },
   {
     initial: 'B',
     name: 'Bagas',
     meta: '128K subscribers · Surabaya',
     quote: 'Brand deal fell through two weeks before payday. Cashy covered the gap and collected on the 21st like it said.',
+    cashedOut: formatIDRX(1_250_000_000),
   },
   {
     initial: 'S',
     name: 'Sari',
     meta: '87K subscribers · Jakarta',
     quote: "I've turned down payday loans twice. This one shows the cost up front and then leaves me alone.",
+    cashedOut: formatIDRX(200_000_000),
   },
 ] as const
 
@@ -239,22 +250,45 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* How it works — four cards, staggered reveal. */}
+      {/* How it works — bento: two wide step cells, two small, one rail, one deco. */}
       <section className="container landing__section" id="how" aria-label="How it works">
         <h2 className="landing__title reveal">How it works</h2>
-        <div className="how-grid">
+        <div className="how-bento">
           {STEPS.map((step, index) => (
             <article
-              className="how-card reveal"
+              className={`bento__cell reveal${step.wide ? ' bento__cell--wide' : ''}`}
               style={{ '--reveal-delay': `${index * 70}ms` } as React.CSSProperties}
               key={step.name}
             >
-              <span className="how-card__num u-mono">{String(index + 1).padStart(2, '0')}</span>
-              <step.Icon size={26} aria-hidden />
+              <div className="bento__head">
+                <span className="how-card__num u-mono">{String(index + 1).padStart(2, '0')}</span>
+                <step.Icon size={24} aria-hidden />
+              </div>
               <h3 className="how-card__name">{step.name}</h3>
               <p className="small muted">{step.text}</p>
+              <p className="bento__chip">{step.chip}</p>
             </article>
           ))}
+          <div className="bento__cell bento__cell--rail reveal" aria-hidden>
+            <div className="rail" style={{ '--pct': '55%' } as React.CSSProperties}>
+              <div className="rail__line" />
+              <div className="rail__marker" />
+              <div className="rail__stop">
+                <span className="rail__dot" />
+                <span className="rail__label">Today</span>
+              </div>
+              <div className="rail__stop">
+                <span className="rail__dot" />
+                <span className="rail__label">The 21st</span>
+              </div>
+            </div>
+            <p className="small">You’re here. Cashy does the rest.</p>
+          </div>
+          <div className="bento__cell bento__cell--deco reveal">
+            <Starburst size={56} className="bento__star" />
+            <p className="bento__big">~1 min</p>
+            <p className="small muted">from verify to cash</p>
+          </div>
         </div>
       </section>
 
@@ -345,28 +379,48 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Creator quotes — asymmetric offsets, initial avatars. */}
+      {/* Creator quotes — one featured on lime, two stacked beside it. */}
       <section className="container landing__section" aria-label="Creators on Cashy">
         <h2 className="landing__title reveal">Paid early, again and again</h2>
-        <div className="quotes">
-          {QUOTES.map((q, index) => (
-            <figure
-              className="quote card reveal"
-              style={{ '--reveal-delay': `${index * 80}ms` } as React.CSSProperties}
-              key={q.name}
-            >
-              <blockquote>“{q.quote}”</blockquote>
-              <figcaption className="row">
-                <span className="quote__avatar" aria-hidden>
-                  {q.initial}
+        <div className="quote-wall">
+          <figure className="quote quote--featured card reveal">
+            <blockquote>“{QUOTES[0].quote}”</blockquote>
+            <figcaption className="row row--between">
+              <span className="row">
+                <span className="quote__avatar quote__avatar--ink" aria-hidden>
+                  {QUOTES[0].initial}
                 </span>
                 <span className="stack stack--tight">
-                  <span className="quote__name">{q.name}</span>
-                  <span className="small muted">{q.meta}</span>
+                  <span className="quote__name">{QUOTES[0].name}</span>
+                  <span className="quote__meta small">{QUOTES[0].meta}</span>
                 </span>
-              </figcaption>
-            </figure>
-          ))}
+              </span>
+              <span className="quote__receipt u-mono">+ {QUOTES[0].cashedOut}</span>
+            </figcaption>
+          </figure>
+          <div className="quote-wall__side">
+            {QUOTES.slice(1).map((q, index) => (
+              <figure
+                className="quote card reveal"
+                style={{ '--reveal-delay': `${(index + 1) * 80}ms` } as React.CSSProperties}
+                key={q.name}
+              >
+                <blockquote>“{q.quote}”</blockquote>
+                <figcaption className="row row--between">
+                  <span className="row">
+                    <span className="quote__avatar" aria-hidden>
+                      {q.initial}
+                    </span>
+                    <span className="stack stack--tight">
+                      <span className="quote__name">{q.name}</span>
+                      <span className="quote__meta small muted">{q.meta}</span>
+                    </span>
+                  </span>
+                  <span className="quote__receipt u-mono">+ {q.cashedOut}</span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
         </div>
       </section>
 

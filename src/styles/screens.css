@@ -1136,14 +1136,15 @@
   max-width: 22ch;
 }
 
-/* How it works */
-.how-grid {
+/* How it works — bento grid: wide step cells anchor the diagonal, the
+   mini payday rail and a timing cell fill the bottom corners. */
+.how-bento {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--space-4);
 }
 
-.how-card {
+.bento__cell {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1155,12 +1156,23 @@
   transition: translate 200ms ease, border-color 200ms ease;
 }
 
-.how-card:hover {
+.bento__cell:hover {
   translate: 0 -4px;
   border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
 }
 
-.how-card svg {
+.bento__cell--wide {
+  grid-column: span 2;
+}
+
+.bento__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  align-self: stretch;
+}
+
+.bento__head svg {
   color: var(--accent);
 }
 
@@ -1172,6 +1184,44 @@
 .how-card__name {
   font-size: var(--text-20);
   font-weight: 600;
+}
+
+.bento__chip {
+  margin-top: auto;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: var(--text-12);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.bento__cell--rail {
+  justify-content: center;
+  gap: var(--space-4);
+  background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+}
+
+.bento__cell--rail .rail {
+  align-self: stretch;
+  min-height: 48px;
+}
+
+.bento__cell--deco {
+  justify-content: center;
+}
+
+.bento__star {
+  color: var(--accent);
+}
+
+.bento__big {
+  font-family: var(--font-display);
+  font-size: var(--text-28);
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 /* Rail showcase */
@@ -1313,12 +1363,18 @@
   background: var(--accent);
 }
 
-/* Quotes — three cards, the middle one offset. */
-.quotes {
+/* Quotes — one featured quote on lime, two receipt cards stacked beside it. */
+.quote-wall {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-5);
-  align-items: start;
+  grid-template-columns: 1.45fr 1fr;
+  gap: var(--space-4);
+  align-items: stretch;
+}
+
+.quote-wall__side {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: var(--space-4);
 }
 
 .quote {
@@ -1326,10 +1382,6 @@
   flex-direction: column;
   gap: var(--space-4);
   padding: var(--space-5);
-}
-
-.quote:nth-child(2) {
-  translate: 0 var(--space-5);
 }
 
 .quote blockquote {
@@ -1340,6 +1392,7 @@
 
 .quote figcaption {
   margin-top: auto;
+  flex-wrap: wrap;
 }
 
 .quote__avatar {
@@ -1357,6 +1410,52 @@
 
 .quote__name {
   font-weight: 600;
+}
+
+/* Receipt chip — the cash-out amount, like a proof of payment. */
+.quote__receipt {
+  flex: none;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-size: var(--text-12);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Three classes out-specific the dark-theme card rule in components.css. */
+.quote.card.quote--featured {
+  background: var(--accent);
+  border-color: transparent;
+  color: var(--accent-ink);
+  padding: var(--space-6);
+}
+
+.quote--featured blockquote {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 2.4vw, var(--text-28));
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  max-width: 30ch;
+  /* Center the quote in the leftover card space; caption stays pinned. */
+  margin-block: auto;
+}
+
+.quote--featured .quote__meta {
+  color: color-mix(in srgb, var(--accent-ink) 72%, var(--accent));
+}
+
+.quote--featured .quote__avatar--ink {
+  background: var(--accent-ink);
+  color: var(--accent);
+  border-color: transparent;
+}
+
+.quote--featured .quote__receipt {
+  background: rgba(19, 26, 5, 0.12);
+  color: var(--accent-ink);
 }
 
 /* Final CTA + footer */
@@ -1423,16 +1522,12 @@
 }
 
 @media (max-width: 1023px) {
-  .how-grid {
+  .how-bento {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .quotes {
+  .quote-wall {
     grid-template-columns: 1fr;
-  }
-
-  .quote:nth-child(2) {
-    translate: none;
   }
 
   .vpitch {
@@ -1465,8 +1560,13 @@
     gap: var(--space-3);
   }
 
-  .how-grid {
+  .how-bento {
     grid-template-columns: 1fr;
+  }
+
+  /* Span-2 cells would force an implicit second column in a 1-col grid. */
+  .bento__cell--wide {
+    grid-column: auto;
   }
 
   .vtiers {
