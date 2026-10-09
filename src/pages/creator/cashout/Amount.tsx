@@ -9,13 +9,13 @@ import { useNavigate } from 'react-router'
 import { Info } from '@phosphor-icons/react'
 import { messages } from '../../../messages.ts'
 import { creator, limitFor } from '../../../mock/data.ts'
-import { feeFor, formatIDRX, formatPercent, parseIDRXInput, repayFor, FEE_BPS } from '../../../lib/money.ts'
+import { feeFor, formatIDRX, formatIDRXInputText, formatPercent, parseIDRXInput, repayFor, FEE_BPS } from '../../../lib/money.ts'
 import { useAppState } from '../../../state/AppStateContext.ts'
 import { useUnsavedGuard } from '../../../lib/useUnsavedGuard.ts'
 
-/** Whole-IDRX text for quick chips, e.g. 1,470,000. */
+/** Whole-IDRX text for quick chips, e.g. 1.470.000. */
 function plainIDRX(cents: number): string {
-  return new Intl.NumberFormat('en-US').format(Math.trunc(cents / 100))
+  return new Intl.NumberFormat('id-ID').format(Math.trunc(cents / 100))
 }
 
 export default function Amount() {
@@ -60,11 +60,11 @@ export default function Amount() {
                 inputMode="decimal"
                 autoComplete="off"
                 className="u-mono"
-                placeholder="0.00"
+                placeholder="0,00"
                 value={amountDraft}
                 aria-invalid={error !== null}
                 aria-describedby={error !== null ? 'amount-error' : undefined}
-                onChange={(event) => setAmountDraft(event.target.value)}
+                onChange={(event) => setAmountDraft(formatIDRXInputText(event.target.value))}
                 onBlur={() => setTouched(true)}
               />
               <span className="amount-input__unit" translate="no">

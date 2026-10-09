@@ -80,7 +80,7 @@ export const messages = {
       body: '',
     }),
     invalid: {
-      title: 'Enter an amount, like 500,000.00.',
+      title: 'Enter an amount, like 500.000,00.',
       body: '',
     } satisfies Message,
     whyLimit: {

@@ -10,7 +10,7 @@ import { Banner, StatusCard } from './status/index.ts'
 import { messages } from '../messages.ts'
 import type { Tier } from '../mock/data.ts'
 import { lpWallet } from '../mock/data.ts'
-import { formatIDRX, parseIDRXInput } from '../lib/money.ts'
+import { formatIDRX, formatIDRXInputText, parseIDRXInput } from '../lib/money.ts'
 import { useAppState } from '../state/AppStateContext.ts'
 import type { DepositPhase } from './useDeposit.ts'
 
@@ -110,11 +110,11 @@ export function DepositForm(props: DepositFormProps) {
             inputMode="decimal"
             autoComplete="off"
             className="u-mono"
-            placeholder="0.00"
+            placeholder="0,00"
             value={amountDraft}
             aria-invalid={error !== null}
             aria-describedby={error !== null ? 'deposit-error' : undefined}
-            onChange={(event) => setAmountDraft(event.target.value)}
+            onChange={(event) => setAmountDraft(formatIDRXInputText(event.target.value))}
           />
           <span className="amount-input__unit" translate="no">
             IDRX
