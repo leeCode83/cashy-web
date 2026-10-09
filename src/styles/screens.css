@@ -833,3 +833,145 @@
     margin: 0 auto var(--space-4);
   }
 }
+
+/* Landing */
+.landing {
+  display: flex;
+  flex-direction: column;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: var(--space-7);
+  align-items: center;
+  padding-block: var(--space-8) var(--space-7);
+}
+
+.hero__title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, var(--text-56));
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.hero__sub {
+  font-size: var(--text-20);
+  color: var(--ink-muted);
+  max-width: 46ch;
+}
+
+.hero__demo {
+  background: var(--surface);
+  border-color: var(--line);
+}
+
+.landrail__caption {
+  color: var(--ink-muted);
+  min-height: 2.5em;
+  margin-top: var(--space-4);
+}
+
+.landrail .rail {
+  cursor: ew-resize;
+  touch-action: none;
+  user-select: none;
+}
+
+.landing__section {
+  padding-block: var(--space-6);
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-5);
+}
+
+.steps__item {
+  display: flex;
+  gap: var(--space-3);
+  align-items: baseline;
+  min-width: 0;
+}
+
+.steps__number {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--canvas);
+  font-size: var(--text-12);
+  transform: translateY(4px);
+}
+
+.compare {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-14);
+}
+
+.compare th,
+.compare td {
+  text-align: left;
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.compare thead th {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.compare tbody th {
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.compare td:last-child {
+  font-weight: 500;
+}
+
+.landing__footer {
+  border-top: 1px solid var(--line);
+  padding-block: var(--space-5);
+  margin-top: var(--space-6);
+}
+
+@media (max-width: 1023px) {
+  .steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 639px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding-block: var(--space-6);
+  }
+
+  .hero .btn {
+    flex: 1;
+  }
+
+  .steps {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar .btn {
+    display: none;
+  }
+}

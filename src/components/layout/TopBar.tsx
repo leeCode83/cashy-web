@@ -1,9 +1,10 @@
 /**
  * Top bar — one mode at a time (brief §3): creator links or LP links, plus
- * the account menu on the right for switching roles. Hidden below 640 px,
- * where the bottom tab bar takes over.
+ * the account menu on the right for switching roles. On the public landing
+ * it switches to the marketing nav (How it works, Vault, CTA). Hidden below
+ * 640 px, where the bottom tab bar takes over.
  */
-import { Link, NavLink } from 'react-router'
+import { Link, NavLink, useLocation } from 'react-router'
 import { CaretDown, Wallet } from '@phosphor-icons/react'
 import { useRole } from './role.ts'
 
@@ -20,9 +21,34 @@ const NAV = {
   ],
 } as const
 
-/** Desktop top bar with brand, role links and the account menu. */
+/** Desktop top bar. On `/` it renders the public landing variant. */
 export function TopBar() {
+  const { pathname } = useLocation()
   const role = useRole()
+
+  if (pathname === '/') {
+    return (
+      <header className="topbar">
+        <div className="container topbar__inner">
+          <Link to="/" className="topbar__brand" translate="no">
+            Cashy
+          </Link>
+          <nav className="topbar__nav" aria-label="Main">
+            <a className="topbar__link" href="#how">
+              How it works
+            </a>
+            <NavLink className="topbar__link" to="/lp">
+              Vault
+            </NavLink>
+          </nav>
+          <Link className="btn btn--primary" to="/creator">
+            Get Cash Early
+          </Link>
+        </div>
+      </header>
+    )
+  }
+
   return (
     <header className="topbar">
       <div className="container topbar__inner">
