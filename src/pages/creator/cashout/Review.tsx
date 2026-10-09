@@ -20,7 +20,7 @@ type BindPhase = 'idle' | 'waiting' | 'linked' | 'failed'
 
 export default function Review() {
   const navigate = useNavigate()
-  const { verifiedMethod, amountDraft, startAdvance } = useAppState()
+  const { verifiedMethod, verifiedBalanceCents, amountDraft, startAdvance } = useAppState()
   const [bind, setBind] = useState<BindPhase>('idle')
   const [consent, setConsent] = useState(false)
   const [sending, setSending] = useState(false)
@@ -29,7 +29,7 @@ export default function Review() {
   const principal = parseIDRXInput(amountDraft)
   const fee = principal !== null ? feeFor(principal) : 0
   const repay = principal !== null ? repayFor(principal) : 0
-  const keep = principal !== null ? creator.finalBalanceCents - repay : 0
+  const keep = principal !== null ? (verifiedBalanceCents ?? creator.finalBalanceCents) - repay : 0
 
   const connect = (): void => {
     setBind('waiting')

@@ -35,7 +35,7 @@ const BUREAU_TICK_MS = 4_000
 
 export default function Dashboard() {
   const navigate = useNavigate()
-  const { verifiedMethod, advance, history, markRepaid } = useAppState()
+  const { verifiedMethod, verifiedBalanceCents, advance, history, markRepaid } = useAppState()
   const [loading, setLoading] = useState(true)
   const [repayState, setRepayState] = useState<'idle' | 'retrying' | 'repaid'>('idle')
 
@@ -48,13 +48,14 @@ export default function Dashboard() {
 
   const repayFailed = advance !== null && repayState === 'idle' && demoScenario() === 'repay-fail'
   const advanceIsLive = advance !== null && advance.status === 'active'
+  const balanceCents = verifiedBalanceCents ?? creator.finalBalanceCents
   const repayBanner =
     repayState === 'repaid'
       ? {
           kind: 'success' as const,
           text: messages.creator.repaidOnTime(
             formatIDRX(advance?.repayCents ?? 0),
-            formatIDRX(creator.finalBalanceCents - (advance?.repayCents ?? 0)),
+            formatIDRX(balanceCents - (advance?.repayCents ?? 0)),
           ),
         }
       : repayFailed
@@ -73,7 +74,7 @@ export default function Dashboard() {
   }
 
   const limitBps = verifiedMethod === 'analytics' ? creator.analyticsLimitBps : creator.limitBps
-  const limit = limitFor(creator.finalBalanceCents, limitBps)
+  const limit = limitFor(balanceCents, limitBps)
   const limitPct = limitBps / 100
 
   return (
@@ -117,7 +118,7 @@ export default function Dashboard() {
               <p className="borrow__eyebrow small">Available to cash out</p>
               <p className="borrow__amount u-mono">{formatIDRX(limit)}</p>
               <p className="borrow__line">
-                Up to {limitPct}% of your {formatIDRX(creator.finalBalanceCents)} final balance. Flat 2.5% fee, shown
+                Up to {limitPct}% of your {formatIDRX(balanceCents)} final balance. Flat 2.5% fee, shown
                 before you commit.
               </p>
               <div>

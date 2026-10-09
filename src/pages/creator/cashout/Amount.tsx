@@ -20,11 +20,12 @@ function plainIDRX(cents: number): string {
 
 export default function Amount() {
   const navigate = useNavigate()
-  const { verifiedMethod, amountDraft, setAmountDraft } = useAppState()
+  const { verifiedMethod, verifiedBalanceCents, amountDraft, setAmountDraft } = useAppState()
   const [touched, setTouched] = useState(false)
 
   const isAnalytics = verifiedMethod === 'analytics'
-  const limit = limitFor(creator.finalBalanceCents, isAnalytics ? creator.analyticsLimitBps : creator.limitBps)
+  const balanceCents = verifiedBalanceCents ?? creator.finalBalanceCents
+  const limit = limitFor(balanceCents, isAnalytics ? creator.analyticsLimitBps : creator.limitBps)
 
   const parsed = parseIDRXInput(amountDraft)
   let error: { title: string; body: string } | null = null
