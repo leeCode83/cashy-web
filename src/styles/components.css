@@ -240,6 +240,7 @@
   padding: var(--space-4);
   border-radius: var(--radius-card);
   background: var(--tone-bg);
+  flex-wrap: wrap;
 }
 
 .banner > svg {

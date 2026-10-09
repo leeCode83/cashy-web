@@ -1018,14 +1018,14 @@
 }
 
 .hero__card--main {
-  top: 12%;
+  top: 4%;
   right: 0;
   width: min(340px, 82%);
   box-shadow: var(--shadow-card);
 }
 
 .hero__card--sub {
-  bottom: 8%;
+  bottom: 4%;
   left: 0;
   width: min(300px, 72%);
   rotate: -3deg;

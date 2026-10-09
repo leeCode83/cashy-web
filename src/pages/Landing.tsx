@@ -200,11 +200,13 @@ export default function Landing() {
           <Starburst size={104} className="hero__star hero__star--lg" />
           <Starburst size={56} className="hero__star hero__star--sm" />
           <div className="card hero__card hero__card--main">
-            <p className="small muted">Final balance</p>
-            <p className="hero__amount u-mono">8,400,000.00 IDRX</p>
-            <p className="chip tone--success" style={{ alignSelf: 'flex-start' }}>
-              <Lightning size={14} aria-hidden /> Payable on the 21st
+            <p className="row row--between">
+              <span className="small muted">Final balance</span>
+              <span className="chip tone--success">
+                <Lightning size={14} aria-hidden /> Payable on the 21st
+              </span>
             </p>
+            <p className="hero__amount u-mono">8,400,000.00 IDRX</p>
           </div>
           <div className="card hero__card hero__card--sub">
             <p className="small muted">You cash out today</p>
