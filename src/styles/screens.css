@@ -451,3 +451,148 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Creator dashboard */
+.dash-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: var(--space-5);
+  align-items: stretch;
+}
+
+.dash-grid--secondary {
+  grid-template-columns: 1fr 1fr;
+}
+
+.dash-hero__amount {
+  font-size: var(--text-40);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+
+.section-title {
+  font-size: var(--text-20);
+  font-weight: 600;
+}
+
+/* Skeleton */
+.skeleton {
+  border-radius: var(--radius-card);
+  background: linear-gradient(100deg, var(--surface) 40%, #eef0f3 50%, var(--surface) 60%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s ease infinite;
+}
+
+.skeleton--title {
+  height: 32px;
+  width: 240px;
+}
+
+.skeleton--card {
+  height: 180px;
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* Activity list — table on desktop, stacked cards under 640 px. */
+.activity {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-14);
+}
+
+.activity th {
+  text-align: left;
+  color: var(--ink-muted);
+  font-weight: 500;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--line);
+}
+
+.activity td {
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+}
+
+.activity td:first-child {
+  white-space: nowrap;
+}
+
+.activity__detail td {
+  background: var(--surface);
+  color: var(--ink-muted);
+}
+
+.activity__toggle {
+  display: inline-flex;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: var(--radius-control);
+  color: var(--ink-muted);
+}
+
+.activity__toggle:hover {
+  background: var(--surface);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 639px) {
+  .dash-grid,
+  .dash-grid--secondary {
+    grid-template-columns: 1fr;
+  }
+
+  .activity thead {
+    display: none;
+  }
+
+  .activity,
+  .activity tbody,
+  .activity tr,
+  .activity td {
+    display: block;
+    width: 100%;
+  }
+
+  .activity tr {
+    border: 1px solid var(--line);
+    border-radius: var(--radius-card);
+    padding: var(--space-3);
+    margin-bottom: var(--space-3);
+  }
+
+  .activity td {
+    border: 0;
+    padding: var(--space-1) 0;
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .activity td::before {
+    content: attr(data-label);
+    color: var(--ink-muted);
+    font-weight: 500;
+  }
+
+  .activity td:last-child::before,
+  .activity td:empty::before {
+    content: '';
+  }
+}
