@@ -1,11 +1,12 @@
 /**
  * Top bar — one mode at a time (brief §3): creator links or LP links, plus
  * the account menu on the right for switching roles. On the public landing
- * it switches to the marketing nav (How it works, Vault, CTA). Hidden below
+ * it renders the marketing nav (logo + pill links + CTA). Hidden below
  * 640 px, where the bottom tab bar takes over.
  */
 import { Link, NavLink, useLocation } from 'react-router'
 import { CaretDown, Wallet } from '@phosphor-icons/react'
+import { Logo } from './Logo.tsx'
 import { useRole } from './role.ts'
 
 /** Nav entries per role — tab/link labels are Title Case (brief §7.3). */
@@ -31,11 +32,15 @@ export function TopBar() {
       <header className="topbar">
         <div className="container topbar__inner">
           <Link to="/" className="topbar__brand" translate="no">
-            Cashy
+            <Logo />
+            <span>Cashy</span>
           </Link>
-          <nav className="topbar__nav" aria-label="Main">
+          <nav className="topbar__nav topbar__pill" aria-label="Main">
             <a className="topbar__link" href="#how">
-              How it works
+              How It Works
+            </a>
+            <a className="topbar__link" href="#rail">
+              The Rail
             </a>
             <NavLink className="topbar__link" to="/lp">
               Vault
@@ -53,7 +58,8 @@ export function TopBar() {
     <header className="topbar">
       <div className="container topbar__inner">
         <Link to="/" className="topbar__brand" translate="no">
-          Cashy
+          <Logo />
+          <span>Cashy</span>
         </Link>
         <nav className="topbar__nav" aria-label="Main">
           {NAV[role].map((item) => (
