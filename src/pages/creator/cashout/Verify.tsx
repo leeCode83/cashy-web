@@ -67,7 +67,7 @@ export default function Verify() {
       <header className="stack">
         <h1 className="page__title">Verify Your Balance</h1>
         <p className="muted">
-          Sign in to AdSense. We seal your session so only the result is shared — never your password or full figures.
+          Sign in to AdSense. We seal your session so only the result is shared, never your password or full figures.
         </p>
       </header>
 
@@ -92,7 +92,7 @@ export default function Verify() {
             <button type="button" className="linklike" onClick={() => start('analytics')}>
               Connect YouTube Analytics instead
             </button>
-            <span className="muted"> — lower limit with this method (up to {formatPercent(creator.analyticsLimitBps)} of your balance).</span>
+            <span className="muted">, with a lower limit of up to {formatPercent(creator.analyticsLimitBps)} of your balance.</span>
           </p>
         </div>
       )}
@@ -137,7 +137,7 @@ export default function Verify() {
           <StatusCard kind="success" title={messages.verify.verified(balance).title} body={messages.verify.verified(balance).body} />
           {verifiedMethod === 'analytics' && (
             <p className="muted small">
-              Verified through YouTube Analytics — you can take up to {formatPercent(creator.analyticsLimitBps)} of your
+              Verified through YouTube Analytics: you can take up to {formatPercent(creator.analyticsLimitBps)} of your
               balance ({formatIDRX(limitFor(creator.finalBalanceCents, creator.analyticsLimitBps))}).
             </p>
           )}

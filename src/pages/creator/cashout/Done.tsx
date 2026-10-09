@@ -69,7 +69,7 @@ export default function Done() {
               <span className="summary__amount">{amount}</span>
             </div>
             <div className="summary__row">
-              <span className="muted">Fee — flat, no interest</span>
+              <span className="muted">Fee, flat, no interest</span>
               <span className="summary__amount">{formatIDRX(advance.feeCents)}</span>
             </div>
             <div className="summary__row">

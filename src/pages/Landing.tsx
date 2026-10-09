@@ -51,8 +51,8 @@ function LandingRail() {
 
   const atPayout = fraction > 0.5
   const caption = atPayout
-    ? `The 21st — ${formatIDRX(DEMO.repay)} is collected automatically. Nothing to remember.`
-    : `Today — you get ${formatIDRX(DEMO.principal)}. One flat fee of ${formatIDRX(DEMO.fee)}.`
+    ? `The 21st: ${formatIDRX(DEMO.repay)} is collected automatically. Nothing to remember.`
+    : `Today, you get ${formatIDRX(DEMO.principal)}. One flat fee of ${formatIDRX(DEMO.fee)}.`
 
   return (
     <div className="landrail">
@@ -64,7 +64,7 @@ function LandingRail() {
         onKeyDown={onKeyDown}
         role="slider"
         tabIndex={0}
-        aria-label="Payday rail demo — drag from today to the 21st"
+        aria-label="Payday rail demo: drag from today to the 21st"
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={Math.round(fraction * 100)}
@@ -108,7 +108,7 @@ const STEPS = [
   {
     name: 'Verify',
     Icon: Fingerprint,
-    text: 'Seal your AdSense session — balance only, never your password.',
+    text: 'Seal your AdSense session: balance only, never your password.',
     chip: 'Never your password',
     wide: true,
   },
@@ -137,7 +137,7 @@ const STEPS = [
 
 /** Proof-strip stats. */
 const STATS = [
-  { value: '2.5%', label: 'flat, once — shown before you commit' },
+  { value: '2.5%', label: 'flat, once, shown before you commit' },
   { value: '4 steps', label: 'verify to cash, about a minute' },
   { value: 'Oct 21', label: 'repayment collects itself' },
 ] as const
@@ -151,7 +151,7 @@ const QUOTES = [
     initial: 'R',
     name: 'Rani',
     meta: '412K subscribers · Bandung',
-    quote: 'The fee showed up before I tapped anything. 2.5%, done — no daily interest eating my payout.',
+    quote: 'The fee showed up before I tapped anything. 2.5%, done, and no daily interest eating my payout.',
     cashedOut: formatIDRX(500_000_000),
   },
   {
@@ -190,7 +190,7 @@ export default function Landing() {
             Get paid before payday.
           </h1>
           <p className="hero__sub reveal" style={{ '--reveal-delay': '120ms' } as React.CSSProperties}>
-            Cash out up to 70% of your final AdSense balance today. One flat 2.5% fee, no interest — repaid
+            Cash out up to 70% of your final AdSense balance today. One flat 2.5% fee, no interest. Repaid
             automatically on the 21st.
           </p>
           <div className="row reveal" style={{ '--reveal-delay': '180ms' } as React.CSSProperties}>
@@ -301,7 +301,7 @@ export default function Landing() {
             <LandingRail />
           </div>
           <p className="small muted showcase__hint">
-            Drag the marker — what you get today, what gets collected on the 21st.
+            Drag the marker: what you get today, and what gets collected on the 21st.
           </p>
         </div>
       </section>
@@ -323,7 +323,7 @@ export default function Landing() {
             <tbody>
               <tr>
                 <th scope="row">Cost</th>
-                <td className="muted">0.3% per day — about 9% a month</td>
+                <td className="muted">0.3% per day, about 9% a month</td>
                 <td>
                   Flat <span className="u-mono">2.5%</span> once, shown before you commit
                 </td>
@@ -368,7 +368,7 @@ export default function Landing() {
             <h2 className="landing__title reveal">Earn from the vault</h2>
             <p className="muted reveal">
               Advances are funded by a vault of lenders in three tranches. Senior first in, last out. Junior earns the
-              most and takes losses first — the app tells you before you commit.
+              most and takes losses first. The app tells you before you commit.
             </p>
             <div className="reveal">
               <Link className="btn btn--secondary" to="/lp">
@@ -456,7 +456,7 @@ export default function Landing() {
               Vault
             </Link>
           </nav>
-          <span className="small muted">Demo — ETH Jakarta 2026 · Advances settle onchain in IDRX</span>
+          <span className="small muted">Demo, ETH Jakarta 2026. Advances settle onchain in IDRX</span>
         </div>
       </footer>
     </div>

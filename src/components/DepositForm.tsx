@@ -131,7 +131,7 @@ export function DepositForm(props: DepositFormProps) {
         Balance <span className="u-mono">{formatIDRX(lpWallet.balanceCents)}</span>
       </p>
       <p className="muted small">
-        You’ll receive ≈ <span className="u-mono">{parsed !== null ? formatIDRX(yearlyEstimate) : '—'}</span> per year at{' '}
+        You’ll receive ≈ <span className="u-mono">{parsed !== null ? formatIDRX(yearlyEstimate) : formatIDRX(0)}</span> per year at{' '}
         {tier.yieldPct.toFixed(1)}%.
       </p>
 
