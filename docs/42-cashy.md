@@ -37,7 +37,7 @@ Cashy memajukan sebagian penghasilan AdSense yang **sudah final** — angka yang
 Alur intinya: verifikasi → penilaian → cair → pelunasan otomatis, dengan enam mekanisme:
 
 - **Verifikasi dua jalur**: utama = zkTLS (kreator login sendiri, sesi browser-nya disegel kriptografis — bukti menempel ke kreator); kedua = API resmi YouTube Analytics sebagai data pendukung dan cadangan (kalau dipakai sebagai bukti pengganti, batas cair lebih kecil demi keamanan).
-- **Bureau AI**: penilai otomatis yang menentukan berapa persen saldo boleh dicairkan, dari 6 sifat historis channel — decay niche, sinyal kesehatan, volatilitas, tren arah, konsistensi upload, anomali traffic palsu.
+- **Bureau System**: penilai otomatis yang menentukan berapa persen saldo boleh dicairkan, dari 6 sifat historis channel — decay niche, sinyal kesehatan, volatilitas, tren arah, konsistensi upload, anomali traffic palsu. Dibangun sebagai sistem aturan (rule-based), bukan AI: setiap sifat dihitung dengan rumus jelas dari data 12 bulan (misal volatilitas = standar deviasi, tren arah = kemiringan regresi, decay niche = tabel topik → faktor), lalu rata tertimbang jadi rasio batas (misal 40–70%). Angka sama selalu menghasilkan batas sama — teraudit, bisa dites, dan bisa dijelaskan ke kreator tanpa kotak hitam.
 - **Advance tanpa tebakan**: hanya atas saldo final yang Google posting ke halaman Pembayaran sekitar tanggal 3 (siap dicairkan sampai tanggal 20) — uang yang sudah pasti milik kreator, nol prediksi; advance di jendela tanpa saldo final (21–3) jadi fitur lanjutan yang di-underwrite bureau.
 - **Pelunasan otomatis (rail debit)**: via open finance berlisensi BI (Ayoconnect) — kreator bind rekening sekali seperti langganan Google Play, lalu uang kembali otomatis saat payout mendarat; opsi kedua = rekening virtual ber-nama sebagai tujuan payout (pelunasan terkuat, tapi verifikasinya berhari-hari).
 - **Anti didanai dua kali**: satu payout punya "capai" unik onchain — lender mana pun bisa cek payout itu sudah diambil atau belum, jadi tidak bisa dimajukan dua kali oleh aplikasi berbeda.
@@ -50,7 +50,7 @@ Alur intinya: verifikasi → penilaian → cair → pelunasan otomatis, dengan e
 - **On-chain**: Foundry/Anvil; kontrak ERC-4626 (vault 3 lapis), registri nullifier, waterfall sweep; smart account (ERC-4337) untuk rail sweep; warp waktu ke tanggal 21 di demo.
 - **zkTLS**: TLSNotary (MPC-TLS) — notarisasi sesi Studio/AdSense + halaman pembayaran; presentasi selektif (yang terlihat cuma ringkasan "12 bulan di kisaran $3–4rb", angka penuh tidak bocor).
 - **Data**: OAuth YouTube Analytics API (scope `yt-analytics-monetary.readonly`) untuk histori estimasi; open finance API (mock Ayoconnect) untuk debit.
-- **Bureau AI**: model teraudit (bukan kotak hitam) yang membaca histori pendapatan dari verifikasi dua jalur.
+- **Bureau System**: aturan scoring transparan (bukan AI, bukan kotak hitam) yang membaca histori pendapatan dari verifikasi dua jalur; satu fungsi murni histori → rasio batas.
 - **Demo**: mock YouTube Studio/AdSense + halaman pembayaran + "lender nakal" — yang hidup onchain: nullifier, waterfall, pool (yang dinilai juri).
 
 ## 7. Model bisnis
@@ -72,7 +72,7 @@ Kalimat satu: **EWA biasa = satu bank dan satu nasabah — cukup database. Cashy
         ↓
 [2. Sistem lihat saldo final "akan cair tanggal 21"]
         ↓
-[3. Bureau AI tentukan berapa boleh dicairkan]
+[3. Bureau System tentukan berapa boleh dicairkan]
         ↓
 [4. Kreator bind rekening (seperti langganan)]
         ↓
