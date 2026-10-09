@@ -88,7 +88,7 @@ export default function Review() {
               <span className="summary__amount">{formatIDRX(principal ?? 0)}</span>
             </div>
             <div className="summary__row">
-              <span className="muted">Fee — flat, no interest</span>
+              <span className="muted">Fee, flat, no interest</span>
               <span className="summary__amount">{formatIDRX(fee)}</span>
             </div>
             <div className="summary__row">

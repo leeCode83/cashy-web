@@ -128,15 +128,15 @@ export default function Amount() {
         <aside className="card summary" aria-label="Live summary">
           <div className="summary__row">
             <span className="muted">You get today</span>
-            <span className="summary__amount">{parsed !== null ? formatIDRX(parsed) : '—'}</span>
+            <span className="summary__amount">{parsed !== null ? formatIDRX(parsed) : formatIDRX(0)}</span>
           </div>
           <div className="summary__row">
             <span className="muted">Fee ({formatPercent(FEE_BPS)}, flat, no interest)</span>
-            <span className="summary__amount">{parsed !== null ? formatIDRX(fee) : '—'}</span>
+            <span className="summary__amount">{parsed !== null ? formatIDRX(fee) : formatIDRX(0)}</span>
           </div>
           <div className="summary__row">
             <span className="muted">Repaid on the 21st</span>
-            <span className="summary__amount">{parsed !== null ? formatIDRX(repay) : '—'}</span>
+            <span className="summary__amount">{parsed !== null ? formatIDRX(repay) : formatIDRX(0)}</span>
           </div>
         </aside>
       </div>

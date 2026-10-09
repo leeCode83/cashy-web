@@ -503,23 +503,64 @@
   }
 }
 
-/* Creator dashboard */
-.dash-grid {
+/* Creator dashboard — 12-col grid: borrow card and the log share the left
+   column, Channel Health spans both rows on the right. */
+.dash {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: var(--space-5);
-  align-items: stretch;
 }
 
-.dash-grid--secondary {
-  grid-template-columns: 1fr 1fr;
+/* The one dark surface on a light page: the screen's focal decision. */
+.dash__borrow {
+  grid-column: span 7;
+  background: var(--ink);
+  border-color: transparent;
+  color: var(--canvas);
+  position: relative;
+  overflow: hidden;
 }
 
-.dash-hero__amount {
+.dash__borrow::after {
+  content: '';
+  position: absolute;
+  right: -18%;
+  bottom: -55%;
+  width: 55%;
+  aspect-ratio: 1;
+  background: radial-gradient(closest-side, rgba(163, 230, 53, 0.16), transparent 70%);
+  pointer-events: none;
+}
+
+.dash__borrow > * {
+  position: relative;
+}
+
+.borrow__eyebrow {
+  color: color-mix(in srgb, var(--canvas) 62%, transparent);
+  font-weight: 500;
+}
+
+.borrow__amount {
   font-size: clamp(2.25rem, 4vw, 3rem);
   font-weight: 600;
   letter-spacing: -0.02em;
+  color: var(--accent);
   overflow-wrap: anywhere;
+}
+
+.borrow__line {
+  color: color-mix(in srgb, var(--canvas) 78%, transparent);
+  max-width: 46ch;
+}
+
+.borrow__hint {
+  color: color-mix(in srgb, var(--canvas) 60%, transparent);
+  max-width: 52ch;
+}
+
+.dash__log {
+  grid-column: span 7;
 }
 
 .section-title {
@@ -527,6 +568,96 @@
   font-size: var(--text-20);
   font-weight: 600;
   letter-spacing: -0.01em;
+}
+
+/* Channel health — the bureau's six traits as live meters. */
+.dash__health {
+  grid-column: span 5;
+  grid-row: span 2;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.health__live {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  white-space: nowrap;
+}
+
+.health__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ok);
+}
+
+.health__traits {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.health__traits .row > span:first-child {
+  font-weight: 500;
+}
+
+.health__score {
+  color: var(--ink-muted);
+}
+
+.health__bar {
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--ink) 8%, transparent);
+  overflow: hidden;
+  margin-block: var(--space-1);
+}
+
+.health__bar i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transform-origin: left;
+  transform: scaleX(var(--score, 0));
+  transition: transform 600ms ease;
+}
+
+.health__verdict {
+  background: var(--accent-soft);
+  border-radius: var(--radius-card);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.health__headline {
+  font-family: var(--font-display);
+  font-size: var(--text-20);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.health__note {
+  margin-top: auto;
+}
+
+@media (max-width: 1023px) {
+  .dash__borrow,
+  .dash__health,
+  .dash__log {
+    grid-column: span 12;
+  }
+
+  .dash__health {
+    grid-row: auto;
+  }
 }
 
 /* Skeleton */
@@ -552,48 +683,96 @@
   }
 }
 
-/* Activity list — table on desktop, stacked cards under 640 px. */
-.activity {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: var(--text-14);
+/* Transaction log — ledger rows: icon, label + outcome chip, detail,
+   amount + date. Failed events tint the icon so misses scan first. */
+.log__filters {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
 }
 
-.activity th {
-  text-align: left;
+.chip-btn--active {
+  background: var(--ink);
+  color: var(--canvas);
+  border-color: var(--ink);
+}
+
+.log__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.log__row {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding-block: var(--space-3);
+  border-bottom: 1px solid var(--line);
+}
+
+.log__row:last-child {
+  border-bottom: 0;
+}
+
+.log__icon {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-control);
+  display: grid;
+  place-items: center;
+  background: var(--surface);
   color: var(--ink-muted);
-  font-weight: 500;
-  padding: var(--space-2) var(--space-3);
-  border-bottom: 1px solid var(--line);
 }
 
-.activity td {
-  padding: var(--space-3);
-  border-bottom: 1px solid var(--line);
-  vertical-align: middle;
+.log__row--failed .log__icon {
+  background: var(--error-bg);
+  color: var(--error);
 }
 
-.activity td:first-child {
+.log__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.log__label {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.log__detail {
+  color: var(--ink-muted);
+  overflow-wrap: anywhere;
+}
+
+.log__meta {
+  flex: none;
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.log__amount {
+  font-weight: 600;
   white-space: nowrap;
 }
 
-.activity__detail td {
-  background: var(--surface);
+.log__amount--muted {
   color: var(--ink-muted);
+  font-weight: 500;
 }
 
-.activity__toggle {
-  display: inline-flex;
-  background: none;
-  border: 0;
-  cursor: pointer;
-  padding: var(--space-2);
-  border-radius: var(--radius-control);
+.log__date {
   color: var(--ink-muted);
-}
-
-.activity__toggle:hover {
-  background: var(--surface);
 }
 
 .visually-hidden {
@@ -606,47 +785,22 @@
 }
 
 @media (max-width: 639px) {
-  .dash-grid,
-  .dash-grid--secondary {
-    grid-template-columns: 1fr;
+  .dash__borrow,
+  .dash__health,
+  .dash__log {
+    grid-column: span 12;
+    grid-row: auto;
   }
 
-  .activity thead {
-    display: none;
+  .log__row {
+    flex-wrap: wrap;
   }
 
-  .activity,
-  .activity tbody,
-  .activity tr,
-  .activity td {
-    display: block;
-    width: 100%;
-  }
-
-  .activity tr {
-    border: 1px solid var(--line);
-    border-radius: var(--radius-card);
-    padding: var(--space-3);
-    margin-bottom: var(--space-3);
-  }
-
-  .activity td {
-    border: 0;
-    padding: var(--space-1) 0;
-    display: flex;
-    justify-content: space-between;
-    gap: var(--space-4);
-  }
-
-  .activity td::before {
-    content: attr(data-label);
-    color: var(--ink-muted);
-    font-weight: 500;
-  }
-
-  .activity td:last-child::before,
-  .activity td:empty::before {
-    content: '';
+  .log__meta {
+    margin-left: calc(36px + var(--space-3));
+    flex-direction: row;
+    align-items: baseline;
+    gap: var(--space-3);
   }
 }
 

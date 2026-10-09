@@ -1,16 +1,20 @@
 /**
- * Creator dashboard (brief §6.2) — one task: know what you can cash out and
- * start. Three states: not verified, ready, active advance. `?demo=repay-fail`
- * shows the failed auto-repay banner with its retry path.
+ * Creator dashboard — one decision per visit: take money now or not. The
+ * screen is built around that: an ink-inverted borrow card (the focal
+ * point), the rule-based Channel Health panel beside it (why the limit is
+ * what it is), and the full transaction log under both. The payday rail
+ * lives in the cash-out flow, not here.
+ *
+ * Flow (user-confirmed): pressing Cash Out starts the flow; verification
+ * runs as its first step, never as a gate in front of this screen.
  */
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { ArrowUpRight, Info } from '@phosphor-icons/react'
 import { Banner, StatusChip } from '../../components/status/index.ts'
-import { PaydayRail } from '../../components/PaydayRail.tsx'
 import { ActivityList } from '../../components/ActivityList.tsx'
 import { messages } from '../../messages.ts'
-import { creator, limitFor } from '../../mock/data.ts'
+import { bureauTraits, bureauVerdict, creator, limitFor } from '../../mock/data.ts'
 import { demoScenario, retryRepayment } from '../../mock/api.ts'
 import { formatIDRX } from '../../lib/money.ts'
 import { useAppState } from '../../state/AppStateContext.ts'
@@ -25,6 +29,9 @@ function greeting(): string {
 
 /** Skeleton beat so the loading state is visible in the demo, in ms. */
 const SKELETON_MS = 600
+
+/** Live recompute cadence for the bureau panel, in ms. */
+const BUREAU_TICK_MS = 4_000
 
 export default function Dashboard() {
   const navigate = useNavigate()
@@ -65,6 +72,10 @@ export default function Dashboard() {
     })
   }
 
+  const limitBps = verifiedMethod === 'analytics' ? creator.analyticsLimitBps : creator.limitBps
+  const limit = limitFor(creator.finalBalanceCents, limitBps)
+  const limitPct = limitBps / 100
+
   return (
     <div className="container page">
       <header>
@@ -85,94 +96,122 @@ export default function Dashboard() {
         <Banner kind="pending" title="Retrying repayment…" body="We’ll let you know as soon as it goes through." />
       )}
 
-      <div className="dash-grid">
-        <section className="card dash-hero" aria-label="Cash out">
-          {advance === null && verifiedMethod === null && (
+      <div className="dash">
+        <section className="card dash__borrow" aria-label="Cash out">
+          {advanceIsLive ? (
             <div className="stack">
-              <h2>Ready in one step</h2>
-              <p className="muted">Verify your AdSense balance to see what you can cash out today.</p>
+              <p className="borrow__eyebrow small">Active advance</p>
+              <p className="borrow__amount u-mono">{formatIDRX(advance.principalCents)}</p>
+              <p className="borrow__line">
+                We collect {formatIDRX(advance.repayCents)} on Oct 21. <StatusChip kind="info" label="Active" />
+              </p>
               <div>
-                <button type="button" className="btn btn--primary" onClick={() => navigate('/creator/cash-out/verify')}>
-                  Verify AdSense
+                <button type="button" className="btn btn--primary" disabled>
+                  Cash Out
                 </button>
               </div>
+              <p className="borrow__hint small">{messages.creator.activeAdvanceHint}</p>
             </div>
-          )}
-          {!advanceIsLive && verifiedMethod !== null && (
+          ) : (
             <div className="stack">
-              <p className="muted small">Ready to cash out</p>
-              <p className="dash-hero__amount u-mono">{formatIDRX(creator.finalBalanceCents)}</p>
-              <p className="muted">
-                Final balance. You can take up to{' '}
-                <strong className="u-mono">
-                  {formatIDRX(limitFor(creator.finalBalanceCents, verifiedMethod === 'analytics' ? creator.analyticsLimitBps : creator.limitBps))}
-                </strong>
-                <details className="popover">
-                  <summary className="popover__summary popover__title">
-                    {' '}
-                    Why this limit? <Info size={14} aria-hidden />
-                  </summary>
-                  <div className="popover__panel">
-                    <p className="popover__body">{messages.amount.whyLimit.body}</p>
-                  </div>
-                </details>
+              <p className="borrow__eyebrow small">Available to cash out</p>
+              <p className="borrow__amount u-mono">{formatIDRX(limit)}</p>
+              <p className="borrow__line">
+                Up to {limitPct}% of your {formatIDRX(creator.finalBalanceCents)} final balance. Flat 2.5% fee, shown
+                before you commit.
               </p>
               <div>
                 <button type="button" className="btn btn--primary" onClick={() => navigate('/creator/cash-out/verify')}>
                   Cash Out
                 </button>
               </div>
-            </div>
-          )}
-          {advanceIsLive && (
-            <div className="stack">
-              <p className="muted small">Active advance</p>
-              <p className="dash-hero__amount u-mono">{formatIDRX(advance.principalCents)}</p>
-              <p className="muted row">
-                Repays on Oct 21. <StatusChip kind="info" label="Active" />
+              <p className="borrow__hint small">
+                Verification runs first if this session hasn’t checked yet. Takes about a minute.
               </p>
-              <p className="muted small">{messages.creator.activeAdvanceHint}</p>
             </div>
           )}
         </section>
 
-        <section className="card" aria-label="Payday rail">
-          <PaydayRail
-            stops={[
-              { label: 'Today' },
-              { label: creator.postedOn, sub: 'Balance posted' },
-              { label: creator.payoutOn, sub: 'Payout' },
-            ]}
-          />
+        <ChannelHealth />
+
+        <section className="card dash__log" aria-label="Activity">
+          <header className="row row--between">
+            <h2 className="section-title">Activity</h2>
+            <span className="small muted">{history.length} events</span>
+          </header>
+          <ActivityList entries={history} filterable viewAllTo="/creator/history" />
         </section>
       </div>
-
-      <div className="dash-grid dash-grid--secondary">
-        {advance !== null && (
-          <section className="card stack" aria-label="Advance detail">
-            <h2 className="section-title">Advance</h2>
-            <p className="muted small row">
-              {formatIDRX(advance.principalCents)} advanced · {formatIDRX(advance.repayCents)} collected on Oct 21.{' '}
-              <StatusChip kind={advance.status === 'repaid' ? 'success' : 'info'} label={advance.status === 'repaid' ? 'Repaid' : 'Active'} />
-            </p>
-          </section>
-        )}
-        <section className="card stack" aria-label="Credit record">
-          <h2 className="section-title">Credit record</h2>
-          <p className="muted small">{creator.onTimeRepayments} on-time repayments</p>
-          <p className="small">
-            <a className="linklike" href="https://explorer.example/address/0x9f4b" target="_blank" rel="noreferrer">
-              Verified onchain <ArrowUpRight size={14} aria-hidden />
-            </a>
-          </p>
-        </section>
-      </div>
-
-      <section className="stack" aria-label="Recent activity">
-        <h2 className="section-title">Recent activity</h2>
-        <ActivityList entries={history} limit={5} viewAllTo="/creator/history" />
-      </section>
     </div>
+  )
+}
+
+/**
+ * Rule-based bureau output as a live panel: six channel traits with meters,
+ * the weighted conclusion under them. Scores jitter around their demo bases
+ * so the recompute reads as realtime; reduced-motion holds them static.
+ */
+function ChannelHealth() {
+  const [scores, setScores] = useState<number[]>(() => bureauTraits.map((trait) => trait.base))
+  const [updatedAt, setUpdatedAt] = useState(() => new Date())
+
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const tick = window.setInterval(() => {
+      setScores((current) =>
+        current.map((score) => Math.min(0.97, Math.max(0.45, score + (Math.random() - 0.5) * 0.04))),
+      )
+      setUpdatedAt(new Date())
+    }, BUREAU_TICK_MS)
+    return () => window.clearInterval(tick)
+  }, [])
+
+  const timeFormat = new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+
+  return (
+    <aside className="card dash__health" aria-label="Channel health">
+      <header className="row row--between">
+        <h2 className="section-title">Channel health</h2>
+        <span className="health__live small muted">
+          <span className="health__dot" aria-hidden />
+          Live · updated {timeFormat.format(updatedAt)}
+        </span>
+      </header>
+      <ul className="health__traits">
+        {bureauTraits.map((trait, index) => (
+          <li key={trait.id}>
+            <div className="row row--between">
+              <span>{trait.label}</span>
+              <span className="health__score u-mono">{Math.round(scores[index] * 100)}</span>
+            </div>
+            <div
+              className="health__bar"
+              role="meter"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.round(scores[index] * 100)}
+              aria-label={trait.label}
+            >
+              <i style={{ '--score': scores[index] } as React.CSSProperties} />
+            </div>
+            <p className="small muted">{trait.detail}</p>
+          </li>
+        ))}
+      </ul>
+      <div className="health__verdict">
+        <p className="health__headline">{bureauVerdict.headline}</p>
+        <p className="small">{bureauVerdict.body}</p>
+        <p className="small muted">
+          {creator.onTimeRepayments} on-time repayments ·{' '}
+          <a className="linklike" href="https://explorer.example/address/0x9f4b" target="_blank" rel="noreferrer">
+            Verified onchain <ArrowUpRight size={14} aria-hidden />
+          </a>
+        </p>
+      </div>
+      <p className="small muted health__note">
+        Rule-based, recomputed every few seconds. <Info size={12} aria-hidden /> Nothing here is a credit score.
+      </p>
+    </aside>
   )
 }
 

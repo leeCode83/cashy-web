@@ -187,7 +187,7 @@ export default function Vault() {
         </section>
 
         <aside className="card deposit-panel" aria-label="Deposit panel">
-          <h2 className="section-title">Deposit — {tier.name}</h2>
+          <h2 className="section-title">Deposit · {tier.name}</h2>
           <DepositForm {...formProps} />
         </aside>
       </div>
@@ -208,7 +208,7 @@ export default function Vault() {
         }}
       >
         <div className="deposit-sheet__grabber" aria-hidden />
-        <h2 className="section-title">Deposit — {tier.name}</h2>
+        <h2 className="section-title">Deposit · {tier.name}</h2>
         <DepositForm {...formProps} />
       </dialog>
     </div>
