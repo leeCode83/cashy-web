@@ -1,20 +1,25 @@
 /**
  * Design tokens — single source of truth for the visual language.
- * Values come from `docs/cashy-ui-ux-design-brief.md` §4 (identity).
- * Never hardcode these values elsewhere; always reference the custom property.
+ * Two themes share one token set: `:root` is the light app (dashboard,
+ * cash-out, vault), `[data-theme='dark']` is the marketing landing.
+ * The AppShell flips `data-theme` per route; never hardcode these values.
  */
 :root {
   color-scheme: light;
 
-  /* Palette */
+  /* Palette — light app */
   --canvas: #ffffff;
-  --surface: #f4f5f7;
+  --surface: #f5f6f4;
   --ink: #0e1116;
   --ink-muted: #475467;
   --line: #e4e7ec;
-  /* Accent carries the primary CTA, the rail and key markers. Text on accent is ink (6.1:1). */
-  --accent: #ff5a1f;
-  --accent-ink: var(--ink);
+
+  /* Accent — lime family. Fill is bright with dark ink on top; -strong is
+     the text/border-safe shade on white (~5:1), -soft is a wash for chips. */
+  --accent: #a3e635;
+  --accent-ink: #1a2e05;
+  --accent-strong: #4d7c0f;
+  --accent-soft: #f2fce0;
 
   /* Status colors — always paired with an icon and a text label. */
   --ok: #067647;
@@ -31,7 +36,7 @@
   --font-ui: 'Geist', system-ui, -apple-system, sans-serif;
   --font-mono: 'Geist Mono', ui-monospace, 'Cascadia Mono', monospace;
 
-  /* Type scale (px) — 12 / 14 / 16 / 20 / 28 / 40 / 56 */
+  /* Type scale (px) — 12 / 14 / 16 / 20 / 28 / 40 / 56 / 72 */
   --text-12: 0.75rem;
   --text-14: 0.875rem;
   --text-16: 1rem;
@@ -39,10 +44,12 @@
   --text-28: 1.75rem;
   --text-40: 2.5rem;
   --text-56: 3.5rem;
+  --text-72: 4.5rem;
 
   /* Shape */
-  --radius-control: 10px;
-  --radius-card: 16px;
+  --radius-control: 12px;
+  --radius-card: 20px;
+  --radius-lg: 28px;
   --radius-pill: 999px;
 
   /* Space scale (px) */
@@ -56,5 +63,35 @@
   --space-8: 64px;
 
   /* Layout */
-  --content-max: 1080px;
+  --content-max: 1120px;
+}
+
+/* Dark theme — the landing. Off-black tinted green, never pure black;
+   the accent lifts to full-brightness lime against it. */
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  --canvas: #0b0f0c;
+  --surface: #141a15;
+  --ink: #f2f5ef;
+  --ink-muted: #a3afa5;
+  --line: #262e28;
+
+  --accent: #c9f556;
+  --accent-ink: #131a05;
+  --accent-strong: #c9f556;
+  --accent-soft: rgba(201, 245, 86, 0.09);
+
+  --ok: #6ee7a8;
+  --ok-bg: rgba(110, 231, 168, 0.1);
+  --error: #ff8a7a;
+  --error-bg: rgba(255, 138, 122, 0.1);
+  --wait: #f5c044;
+  --wait-bg: rgba(245, 192, 68, 0.1);
+  --info: #7eb8ff;
+  --info-bg: rgba(126, 184, 255, 0.1);
+
+  /* Ambient glow behind hero / feature cards. */
+  --glow: rgba(201, 245, 86, 0.14);
+  --shadow-card: 0 24px 64px rgba(0, 0, 0, 0.45);
 }
