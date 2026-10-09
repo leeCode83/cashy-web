@@ -145,14 +145,19 @@ export const messages = {
 
   /** Creator dashboard and history. */
   creator: {
-    repayScheduled: {
+    /** @param repay Repayment amount formatted with formatIDRX. */
+    repayScheduled: (repay: string): Message => ({
       title: 'Repayment on Oct 21',
-      body: 'We’ll collect 5,125,000.00 IDRX from your linked payout account when your payout arrives.',
-    } satisfies Message,
-    repaidOnTime: {
+      body: `We’ll collect ${repay} from your linked payout account when your payout arrives.`,
+    }),
+    /**
+     * @param repay Repayment amount formatted with formatIDRX.
+     * @param keep Amount the creator kept from the payout, formatted with formatIDRX.
+     */
+    repaidOnTime: (repay: string, keep: string): Message => ({
       title: 'Repaid on time',
-      body: '5,125,000.00 IDRX was collected. You received 3,275,000.00 IDRX. Your credit record was updated.',
-    } satisfies Message,
+      body: `${repay} was collected. You received ${keep}. Your credit record was updated.`,
+    }),
     repayFailed: {
       title: 'Auto-repay didn’t go through',
       body: 'We couldn’t collect from your payout account. Make sure your payout has arrived, then retry before Oct 23.',

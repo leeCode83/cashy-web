@@ -1,0 +1,64 @@
+/**
+ * Top bar — one mode at a time (brief §3): creator links or LP links, plus
+ * the account menu on the right for switching roles. Hidden below 640 px,
+ * where the bottom tab bar takes over.
+ */
+import { Link, NavLink } from 'react-router'
+import { CaretDown, Wallet } from '@phosphor-icons/react'
+import { useRole } from './role.ts'
+
+/** Nav entries per role — tab/link labels are Title Case (brief §7.3). */
+const NAV = {
+  creator: [
+    { to: '/creator', label: 'Dashboard' },
+    { to: '/creator/cash-out/verify', label: 'Cash Out' },
+    { to: '/creator/history', label: 'History' },
+  ],
+  lp: [
+    { to: '/lp', label: 'Vault' },
+    { to: '/lp/position', label: 'My Position' },
+  ],
+} as const
+
+/** Desktop top bar with brand, role links and the account menu. */
+export function TopBar() {
+  const role = useRole()
+  return (
+    <header className="topbar">
+      <div className="container topbar__inner">
+        <Link to="/" className="topbar__brand" translate="no">
+          Cashy
+        </Link>
+        <nav className="topbar__nav" aria-label="Main">
+          {NAV[role].map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) => `topbar__link${isActive ? ' topbar__link--active' : ''}`}
+            >
+              {item.label}
+            </NavLink>
+          ))}
+        </nav>
+        <details className="popover account">
+          <summary className="popover__summary account__summary" aria-label="Account menu">
+            <Wallet size={18} aria-hidden />
+            <span>Account</span>
+            <CaretDown size={14} aria-hidden />
+          </summary>
+          <div className="popover__panel account__panel">
+            {role === 'creator' ? (
+              <Link className="account__item" to="/lp">
+                Switch to LP Vault
+              </Link>
+            ) : (
+              <Link className="account__item" to="/creator">
+                Switch to Creator
+              </Link>
+            )}
+          </div>
+        </details>
+      </div>
+    </header>
+  )
+}
