@@ -6,6 +6,7 @@
  */
 import { useState } from 'react'
 import type { ReactNode } from 'react'
+import type { BalanceSource } from '../lib/reclaim-proof.ts'
 import { seedHistory } from '../mock/data.ts'
 import type { Advance, HistoryEntry, LpPosition } from '../mock/data.ts'
 import type { VerifyMethod } from '../mock/api.ts'
@@ -20,6 +21,12 @@ const nextHistoryId = (): string => `h${(historyId += 1)}`
  */
 export function AppStateProvider({ children }: { children: ReactNode }) {
   const [verifiedMethod, setVerifiedMethod] = useState<VerifyMethod | null>(null)
+  const [verifiedBalanceCents, setVerifiedBalanceCents] = useState<number | null>(null)
+  const [balanceSource, setBalanceSource] = useState<BalanceSource | null>(null)
+  const setVerifiedBalance = (cents: number, source: BalanceSource): void => {
+    setVerifiedBalanceCents(cents)
+    setBalanceSource(source)
+  }
   const [advance, setAdvance] = useState<Advance | null>(null)
   const [history, setHistory] = useState<HistoryEntry[]>(seedHistory)
   const [lpConnected, setLpConnected] = useState(false)
@@ -75,6 +82,9 @@ export function AppStateProvider({ children }: { children: ReactNode }) {
       value={{
         verifiedMethod,
         setVerifiedMethod,
+        verifiedBalanceCents,
+        balanceSource,
+        setVerifiedBalance,
         amountDraft,
         setAmountDraft,
         advance,

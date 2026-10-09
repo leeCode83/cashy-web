@@ -3,6 +3,7 @@
  * only sees the provider component. Screens import `useAppState` from here.
  */
 import { createContext, useContext } from 'react'
+import type { BalanceSource } from '../lib/reclaim-proof.ts'
 import type { Advance, HistoryEntry, LpPosition } from '../mock/data.ts'
 import type { VerifyMethod } from '../mock/api.ts'
 
@@ -10,6 +11,10 @@ import type { VerifyMethod } from '../mock/api.ts'
 export interface AppState {
   /** AdSense (or Analytics) verification result for this session. */
   verifiedMethod: VerifyMethod | null
+  /** Balance proven this session, in cents — zkTLS proof or pinned demo. */
+  verifiedBalanceCents: number | null
+  /** Where the proven balance came from; screens may badge provenance. */
+  balanceSource: BalanceSource | null
   /** The live advance, or null when none is active. */
   advance: Advance | null
   /** Activity feed, newest first. */
@@ -25,6 +30,8 @@ export interface AppState {
 /** Actions the app can perform on session state. */
 export interface AppActions {
   setVerifiedMethod: (method: VerifyMethod) => void
+  /** Record the proven balance together with the source that produced it. */
+  setVerifiedBalance: (cents: number, source: BalanceSource) => void
   setAmountDraft: (draft: string) => void
   /** Record a new advance and log the cash-out in history. */
   startAdvance: (advance: Advance) => void
