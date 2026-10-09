@@ -1,0 +1,95 @@
+<!doctype html>
+<!--
+  Mock Google AdSense "Payments" page — the zkTLS verification target.
+
+  The HTML here is a stability contract with the Reclaim provider regex:
+  the balance lives in ONE flat element with data-testid="final-balance",
+  no nested tags, no minification. If you change this markup, update the
+  responseMatches regex in the Reclaim dashboard and re-test it there
+  before deploying. See README.md.
+-->
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Payments - AdSense</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="topbar__brand">
+        <span class="topbar__logo">▲</span>
+        <span class="topbar__product">AdSense</span>
+      </div>
+      <div class="topbar__account" title="Demo account">D</div>
+    </header>
+
+    <nav class="tabs">
+      <span class="tabs__item">Beranda</span>
+      <span class="tabs__item">Iklan</span>
+      <span class="tabs__item tabs__item--active">Pembayaran</span>
+      <span class="tabs__item">Laporan</span>
+    </nav>
+
+    <main class="page">
+      <h1 class="page__heading">Pembayaran</h1>
+
+      <section class="card card--balance">
+        <h2 class="card__title">Saldo akhir bulan ini</h2>
+        <div class="balance">
+          <span class="balance__label">Estimasi saldo yang akan dibayarkan</span>
+          <div class="balance-amount" data-testid="final-balance">8.400.000 IDRX</div>
+        </div>
+        <p class="card__note">
+          Saldo akhir dihitung pada akhir bulan berjalan dan dikunci setelah
+          audit pembayaran selesai.
+        </p>
+      </section>
+
+      <section class="card">
+        <h2 class="card__title">Jadwal pembayaran berikutnya</h2>
+        <dl class="schedule">
+          <div class="schedule__row">
+            <dt>Batas penerbitan</dt>
+            <dd>20 Oktober 2026</dd>
+          </div>
+          <div class="schedule__row">
+            <dt>Jendela payout</dt>
+            <dd data-testid="payout-window">21 – 26 Oktober 2026</dd>
+          </div>
+          <div class="schedule__row">
+            <dt>Metode</dt>
+            <dd>Transfer bank (IDRX)</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="card">
+        <h2 class="card__title">Ringkasan transaksi</h2>
+        <table class="ledger">
+          <thead>
+            <tr>
+              <th>Tanggal</th>
+              <th>Deskripsi</th>
+              <th class="ledger__amount">Jumlah</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>30 Sep 2026</td>
+              <td>Pembayaran bulan Agustus</td>
+              <td class="ledger__amount">7.950.000 IDRX</td>
+            </tr>
+            <tr>
+              <td>31 Okt 2026</td>
+              <td>Perolehan bulan Oktober (estimasi)</td>
+              <td class="ledger__amount">8.400.000 IDRX</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <footer class="footer">Demo environment — bukan situs Google yang sebenarnya.</footer>
+  </body>
+</html>
