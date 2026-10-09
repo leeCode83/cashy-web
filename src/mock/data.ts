@@ -62,8 +62,10 @@ export const seedHistory: HistoryEntry[] = [
 ]
 
 /** A vault tranche. Junior is never preselected and demands a risk ack. */
+export type TierId = 'senior' | 'junior' | 'reserve'
+
 export interface Tier {
-  id: 'senior' | 'junior' | 'reserve'
+  id: TierId
   name: string
   /** Estimated annual yield, in percent (9.0 = 9.0%). */
   yieldPct: number

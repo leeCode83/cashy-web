@@ -183,9 +183,12 @@ export const messages = {
       title: 'You don’t have enough IDRX.',
       body: `Your balance is ${balance}.`,
     }),
-    /** @param spaceLeft Remaining tier capacity formatted with formatIDRX. */
-    overCapacity: (spaceLeft: string): Message => ({
-      title: `Only ${spaceLeft} of space is left in Senior.`,
+    /**
+     * @param spaceLeft Remaining tier capacity formatted with formatIDRX.
+     * @param tier Tier name.
+     */
+    overCapacity: (spaceLeft: string, tier: string): Message => ({
+      title: `Only ${spaceLeft} of space is left in ${tier}.`,
       body: '',
     }),
     juniorRisk: {
