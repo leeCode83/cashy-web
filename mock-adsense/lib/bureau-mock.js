@@ -34,6 +34,27 @@ const NO_AUTH = {
 const badParam = (message, location) => ({ status: 400, body: gErr(400, 'invalidParameter', message, location) })
 const requiredParam = (name) => ({ status: 400, body: gErr(400, 'required', `Required parameter: ${name}`, name) })
 
+/**
+ * Indeks profil data (0-19). Tanpa parameter: rotasi waktu per detik supaya
+ * curl langsung ikut bergilir. Service CashQ meneruskan indeks eksplisit
+ * supaya ketiga endpoint dalam satu snapshot konsisten satu profil.
+ */
+function indeksProfil(sp) {
+  const raw = sp.get('profil')
+  if (raw === null || raw === '') {
+    return { indeks: Math.floor(Date.now() / 1000) % data.JUMLAH_PROFIL }
+  }
+  if (!/^\d+$/.test(raw) || Number(raw) >= data.JUMLAH_PROFIL) {
+    return {
+      error: badParam(
+        `Invalid value '${raw}' for parameter profil. Expected an integer from 0 to ${data.JUMLAH_PROFIL - 1}.`,
+        'profil',
+      ),
+    }
+  }
+  return { indeks: Number(raw) }
+}
+
 function partsOf(sp, param, allowed) {
   const raw = sp.get(param)
   if (!raw) return { error: requiredParam(param) }
@@ -47,6 +68,9 @@ function partsOf(sp, param, allowed) {
 
 function analyticsReport(sp, hasAuth) {
   if (!hasAuth) return NO_AUTH
+  const pf = indeksProfil(sp)
+  if (pf.error) return pf.error
+  const bulanan = data.profilByIndex(pf.indeks).monthly
 
   for (const p of ['ids', 'startDate', 'endDate', 'metrics']) {
     if (!sp.get(p)) return requiredParam(p)
@@ -82,7 +106,7 @@ function analyticsReport(sp, hasAuth) {
 
   const from = sp.get('startDate').slice(0, 7)
   const to = sp.get('endDate').slice(0, 7)
-  let rows = data.monthly
+  let rows = bulanan
     .filter((r) => r.month >= from && r.month <= to)
     .map((r) => [...dims.map((d) => r[d]), ...metrics.map((m) => r[m])])
 
@@ -107,6 +131,9 @@ function analyticsReport(sp, hasAuth) {
 
 function channelsList(sp, hasAuth) {
   if (!hasAuth) return NO_AUTH
+  const pf = indeksProfil(sp)
+  if (pf.error) return pf.error
+  const kanal = data.channelByIndex(pf.indeks)
 
   const { parts, error } = partsOf(sp, 'part', { id: 1, snippet: 1, contentDetails: 1, statistics: 1 })
   if (error) return error
@@ -118,8 +145,8 @@ function channelsList(sp, hasAuth) {
 
   let items = []
   if (mine || id === data.CHANNEL_ID) {
-    const ch = { kind: 'youtube#channel', etag: ETAG_CHANNEL, id: data.channel.id }
-    for (const p of parts) if (data.channel[p]) ch[p] = data.channel[p]
+    const ch = { kind: 'youtube#channel', etag: ETAG_CHANNEL, id: kanal.id }
+    for (const p of parts) if (kanal[p]) ch[p] = kanal[p]
     items = [ch]
   }
   return {
@@ -137,6 +164,9 @@ function channelsList(sp, hasAuth) {
 
 function playlistItems(sp, hasAuth) {
   if (!hasAuth) return NO_AUTH
+  const pf = indeksProfil(sp)
+  if (pf.error) return pf.error
+  const profil = data.profilByIndex(pf.indeks)
 
   const { parts, error } = partsOf(sp, 'part', { id: 1, snippet: 1, contentDetails: 1 })
   if (error) return error
@@ -162,7 +192,7 @@ function playlistItems(sp, hasAuth) {
     offset = +m[1]
   }
 
-  const items = data.playlistItems.slice(offset, offset + max).map((it) => {
+  const items = profil.items.slice(offset, offset + max).map((it) => {
     const obj = { kind: 'youtube#playlistItem', etag: ETAG_PLAYLIST, id: it.id }
     for (const p of parts) {
       if (p === 'snippet')
@@ -183,12 +213,12 @@ function playlistItems(sp, hasAuth) {
   const body = {
     kind: 'youtube#playlistItemListResponse',
     etag: ETAG_PLAYLIST,
-    pageInfo: { totalResults: data.totalResults, resultsPerPage: max },
+    pageInfo: { totalResults: profil.totalResults, resultsPerPage: max },
     items,
   }
   // ponytail: paginasi berhenti di 100 item yang dihasilkan; totalResults
-  // tetap melaporkan 1104 seperti channel aslinya.
-  if (offset + max < data.playlistItems.length) body.nextPageToken = `PT${offset + max}`
+  // tetap melaporkan angka channel masing-masing profil.
+  if (offset + max < profil.items.length) body.nextPageToken = `PT${offset + max}`
   return { status: 200, body }
 }
 
