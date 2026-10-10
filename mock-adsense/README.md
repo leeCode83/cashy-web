@@ -1,42 +1,72 @@
 # Mock AdSense Payments page
 
-Halaman statis bergaya AdSense "Payments" — **target verifikasi zkTLS**.
-Reclaim meng-attest sesi HTTPS ke domain ini, jadi proof tetap kriptografis
-asli; domain-nya saja milik kita. Deploy sebagai **project Vercel kedua**
-(domain terpisah dari cashy-web agar terlihat seperti situs pihak ketiga).
+Halaman statis bergaya AdSense "Info pembayaran" — **target verifikasi zkTLS
+(zkPass TransGate)**. TransGate melakukan 3P-TLS ke domain ini, jadi proof
+tetap kriptografis asli; domain-nya saja milik kita. Deploy sebagai **project
+Vercel kedua** (domain terpisah dari cashy-web agar terlihat seperti situs
+pihak ketiga).
 
-Kontrak stabil dengan regex provider:
+## Kontrak zkPass schema (jangan diubah tanpa update schema)
 
-- Saldo final ada di satu elemen flat: `data-testid="final-balance"` → `8.400.000 IDRX`
-- Jendela payout: `data-testid="payout-window"` → `21 – 26 Oktober 2026`
-- Jangan minify / ubah struktur markup tanpa mengupdate regex (lihat bawah).
+TransGate menyadap request API, bukan HTML — jadi kontrak stabilnya adalah
+**nama key di JSON**, bukan selector HTML:
+
+- **Target intercept**: `GET /data/payments.json` (diload halaman via `fetch`,
+  terlihat sebagai XHR di tab Network — persis cara TransGate menangkapnya).
+- `payment_id` → **nullifier** (anti didanai-ganda; di mock ini satu akun
+  demo, jadi semua proof berbagi nilai yang sama — cukup untuk demo).
+- `balance_final` → saldo final yang diverifikasi (angka polos, tanpa format).
+- `currency` → `IDRX`.
+- Key lain (`creator_id`, `period`, `payout_window`, `estimate_next`,
+  `generated_at`) bebas, tapi jangan dihapus.
+
+Halaman HTML mem-fetch JSON saat load; angka statis di HTML hanyalah fallback
+offline dan harus dibuat identik dengan JSON.
+
+## Schema JSON untuk zkPass Dev Center
+
+```json
+{
+  "issuer": "AdSense",
+  "desc": "Saldo akhir AdSense yang sudah final dan siap dibayar",
+  "website": "https://<URL-MOCK>/",
+  "APIs": [
+    {
+      "host": "<HOST-MOCK>",
+      "intercept": { "url": "data/payments.json", "method": "GET" },
+      "assert": [
+        { "key": "currency", "value": "IDRX", "operation": "=" },
+        { "key": "balance_final", "value": "0", "operation": ">=" }
+      ],
+      "nullifier": "payment_id"
+    }
+  ],
+  "tips": { "message": "Halaman pembayaran terbuka. Klik 'Mulai' untuk memverifikasi saldo." }
+}
+```
+
+Ganti `<URL-MOCK>` / `<HOST-MOCK>` dengan URL produksi Vercel. Alur setup:
+schema divalidasi di Dev Center (gratis) dengan ekstensi Schema Validator →
+deploy → catat `appId` + `schemaId` → `TransgateConnect(appid).launch(schemaId,
+walletAddress)` di sisi cashq-web.
 
 ## Deploy (project Vercel kedua)
 
-1. Push branch ini, lalu di dashboard Vercel: **Add New… → Project → Import** repo `cashy-web`.
+1. Push repo, lalu di dashboard Vercel: **Add New… → Project → Import**.
 2. Sebelum menekan Deploy, buka **Root Directory** → set `mock-adsense`.
 3. Framework Preset: **Other** (static, tanpa build command, tanpa output dir).
-4. Deploy → catat URL produksi (mis. `https://adsense-mock-xxx.vercel.app`).
-5. Isi URL itu ke `MOCK_ADSENSE_URL` (`.env.local` + Vercel env cashy-web).
-
-## Konfigurasi provider Reclaim (dashboard, bukan kode)
-
-Custom provider di [Reclaim dashboard](https://dev.reclaimprotocol.org):
-
-- **URL**: URL mock page ter-deploy (langkah 4).
-- **Response Matches** — regex mengekstrak saldo ke parameter `balance`:
-
-  ```
-  data-testid="final-balance">\s*(?<balance>[\d.,]+)
-  ```
-
-- **Uji regex di preview dashboard sebelum dipakai demo** — regex harus
-  menangkap `8.400.000` (bukan `8`, bukan baris lain).
-- Salinan angka di tabel "Ringkasan transaksi" sengaja identik; bila regex
-  menangkap keduanya, persempit dengan konteks (anchor `data-testid` sudah
-  unik di halaman ini).
-- Catat **Provider ID** dari provider yang jadi → `RECLAIM_PROVIDER_ID`.
+4. Deploy → catat URL produksi.
+5. Isi URL itu ke env cashq-web (mis. `MOCK_ADSENSE_URL`) dan ke schema di atas.
 
 ## Testing lokal
 
-Buka `index.html` langsung di browser — tidak butuh build.
+`fetch()` butuh server HTTP (via `file://` ia gagal — halaman tetap tampil
+pakai angka fallback statis):
+
+```sh
+python -m http.server 8080
+# lalu buka http://localhost:8080
+```
+
+Cek tab Network: `data/payments.json` harus muncul sebagai XHR dengan
+`Content-Type: application/json`.

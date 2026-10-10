@@ -1,95 +1,208 @@
 <!doctype html>
 <!--
-  Mock Google AdSense "Payments" page — the zkTLS verification target.
+  Mock Google AdSense "Info pembayaran" — zkTLS (zkPass TransGate) verification target.
 
-  The HTML here is a stability contract with the Reclaim provider regex:
-  the balance lives in ONE flat element with data-testid="final-balance",
-  no nested tags, no minification. If you change this markup, update the
-  responseMatches regex in the Reclaim dashboard and re-test it there
-  before deploying. See README.md.
+  Stability contract with the zkPass schema (see README.md):
+  - TransGate intercepts GET /data/payments.json. The JSON KEY NAMES are the
+    contract: payment_id (nullifier), balance_final, currency. Never rename them.
+  - This page fetches the JSON on load (visible as XHR in DevTools Network tab).
+    The static values below are offline fallbacks — keep them identical to the
+    JSON so the page renders the same without a server.
 -->
 <html lang="id">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Payments - AdSense</title>
+    <title>Info pembayaran - AdSense</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%231a73e8'/%3E%3Cpath d='M7 16V9m5 7V6m5 10v-4' stroke='%23fff' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@20..48,400,0" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <header class="topbar">
-      <div class="topbar__brand">
-        <span class="topbar__logo">▲</span>
-        <span class="topbar__product">AdSense</span>
+    <aside class="rail">
+      <div class="rail__brand">
+        <svg class="rail__mark" viewBox="0 0 24 24" aria-hidden="true">
+          <rect width="24" height="24" rx="6" fill="#1a73e8" />
+          <path d="M7 16V9m5 7V6m5 10v-4" stroke="#fff" stroke-width="2.4" stroke-linecap="round" />
+        </svg>
+        <span class="rail__wordmark">AdSense</span>
       </div>
-      <div class="topbar__account" title="Demo account">D</div>
-    </header>
 
-    <nav class="tabs">
-      <span class="tabs__item">Beranda</span>
-      <span class="tabs__item">Iklan</span>
-      <span class="tabs__item tabs__item--active">Pembayaran</span>
-      <span class="tabs__item">Laporan</span>
-    </nav>
+      <nav class="rail__nav">
+        <span class="rail__item"><span class="ms">home</span>Beranda</span>
+        <span class="rail__item"><span class="ms">ads_click</span>Iklan</span>
+        <span class="rail__item"><span class="ms">language</span>Situs</span>
+        <span class="rail__item"><span class="ms">assessment</span>Laporan</span>
 
-    <main class="page">
-      <h1 class="page__heading">Pembayaran</h1>
+        <span class="rail__item rail__item--active"><span class="ms">payments</span>Pembayaran</span>
+        <span class="rail__sub">Info pembayaran</span>
+        <span class="rail__sub">Setelan pembayaran</span>
+        <span class="rail__sub">Dokumen pembayaran</span>
 
-      <section class="card card--balance">
-        <h2 class="card__title">Saldo akhir bulan ini</h2>
-        <div class="balance">
-          <span class="balance__label">Estimasi saldo yang akan dibayarkan</span>
-          <div class="balance-amount" data-testid="final-balance">8.400.000 IDRX</div>
+        <span class="rail__item"><span class="ms">settings</span>Setelan</span>
+      </nav>
+
+      <div class="rail__foot">
+        <span class="rail__item"><span class="ms">help</span>Bantuan</span>
+        <span class="rail__item"><span class="ms">feedback</span>Kirim masukan</span>
+      </div>
+    </aside>
+
+    <div class="app">
+      <header class="topbar">
+        <div class="topbar__brand">
+          <span class="ms topbar__menu">menu</span>
+          <svg class="topbar__g" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="#4285F4" d="M23 12.2c0-.8-.1-1.6-.2-2.3H12v4.5h6.2a5.3 5.3 0 0 1-2.3 3.5v2.9h3.7c2.2-2 3.4-5 3.4-8.6z"/>
+            <path fill="#34A853" d="M12 23.5c3.1 0 5.7-1 7.6-2.8l-3.7-2.9c-1 .7-2.3 1.1-3.9 1.1-3 0-5.5-2-6.4-4.7H1.8v3A11.5 11.5 0 0 0 12 23.5z"/>
+            <path fill="#FBBC05" d="M5.6 14.2a6.9 6.9 0 0 1 0-4.4v-3H1.8a11.5 11.5 0 0 0 0 10.4l3.8-3z"/>
+            <path fill="#EA4335" d="M12 5.1c1.7 0 3.2.6 4.4 1.7L19.6 3.6A11.5 11.5 0 0 0 1.8 6.8l3.8 3c.9-2.7 3.4-4.7 6.4-4.7z"/>
+          </svg>
+          <span class="topbar__product">AdSense</span>
         </div>
-        <p class="card__note">
-          Saldo akhir dihitung pada akhir bulan berjalan dan dikunci setelah
-          audit pembayaran selesai.
-        </p>
-      </section>
 
-      <section class="card">
-        <h2 class="card__title">Jadwal pembayaran berikutnya</h2>
-        <dl class="schedule">
-          <div class="schedule__row">
-            <dt>Batas penerbitan</dt>
-            <dd>20 Oktober 2026</dd>
-          </div>
-          <div class="schedule__row">
-            <dt>Jendela payout</dt>
-            <dd data-testid="payout-window">21 – 26 Oktober 2026</dd>
-          </div>
-          <div class="schedule__row">
-            <dt>Metode</dt>
-            <dd>Transfer bank (IDRX)</dd>
-          </div>
-        </dl>
-      </section>
+        <label class="topbar__search">
+          <span class="ms topbar__search-icon">search</span>
+          <input type="text" placeholder="Cari di AdSense" />
+        </label>
 
-      <section class="card">
-        <h2 class="card__title">Ringkasan transaksi</h2>
-        <table class="ledger">
-          <thead>
-            <tr>
-              <th>Tanggal</th>
-              <th>Deskripsi</th>
-              <th class="ledger__amount">Jumlah</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>30 Sep 2026</td>
-              <td>Pembayaran bulan Agustus</td>
-              <td class="ledger__amount">7.950.000 IDRX</td>
-            </tr>
-            <tr>
-              <td>31 Okt 2026</td>
-              <td>Perolehan bulan Oktober (estimasi)</td>
-              <td class="ledger__amount">8.400.000 IDRX</td>
-            </tr>
-          </tbody>
-        </table>
-      </section>
-    </main>
+        <div class="topbar__right">
+          <span class="ms topbar__icon">help</span>
+          <span class="ms topbar__icon topbar__icon--dot">notifications</span>
+          <div class="topbar__account">
+            <span class="topbar__avatar">L</span>
+            <div class="topbar__id">
+              <div class="topbar__name">Lee Kriyanto</div>
+              <div class="topbar__mail">lee.creator@gmail.com</div>
+            </div>
+            <span class="ms topbar__chev">arrow_drop_down</span>
+          </div>
+        </div>
+      </header>
 
-    <footer class="footer">Demo environment — bukan situs Google yang sebenarnya.</footer>
+      <main class="page">
+        <h1 class="page__heading">Info pembayaran</h1>
+
+        <section class="card card--balance">
+          <div class="card__head">
+            <h2 class="card__title">Saldo akhir September 2026</h2>
+            <span class="chip chip--paid">
+              <span class="ms chip__icon">event_available</span>
+              <span data-testid="payout-window" data-field="payout-window">Akan dibayarkan 21 – 26 Oktober 2026</span>
+            </span>
+          </div>
+          <div class="balance">
+            <span class="balance__label">Saldo final — sudah dikunci Google, siap dibayar</span>
+            <div class="balance-amount" data-testid="final-balance" data-field="balance-final">8.400.000 IDRX</div>
+          </div>
+          <div class="meta">
+            <span class="meta__item">No. pembayaran: <span data-testid="payment-id" data-field="payment-id">PAY-2026-09-0001834</span></span>
+            <span class="meta__item">ID penayang: pub-774-221-9902</span>
+          </div>
+          <p class="card__note">
+            Saldo akhir diposting otomatis awal bulan setelah audit pembayaran
+            selesai dan tidak berubah lagi.
+          </p>
+        </section>
+
+        <div class="grid">
+          <section class="card">
+            <h2 class="card__title">Perkiraan saldo Oktober 2026</h2>
+            <div class="balance">
+              <span class="balance__label">Estimasi — belum final</span>
+              <div class="balance-amount balance-amount--est" data-field="estimate">9.214.750 IDRX</div>
+            </div>
+            <p class="card__note">
+              Baru bisa dicairkan setelah dikunci awal November.
+            </p>
+          </section>
+
+          <section class="card">
+            <h2 class="card__title">Metode pembayaran</h2>
+            <div class="pay-method pay-method--selected">
+              <span class="radio radio--on"></span>
+              <div class="pay-method__body">
+                <div class="pay-method__name">
+                  Stablecoin IDRX
+                  <span class="tag tag--primary">Utama</span>
+                  <span class="tag tag--ok">✓ Terverifikasi</span>
+                </div>
+                <div class="pay-method__detail">
+                  Wallet on-chain ·
+                  <span title="0x7F3dA55b4c2E19b6D8aC9F4e12C7b83D5E6c9A21">0x7F3d…9A21</span>
+                </div>
+              </div>
+              <span class="ms pay-method__icon">account_balance_wallet</span>
+            </div>
+            <div class="pay-method">
+              <span class="radio"></span>
+              <div class="pay-method__body">
+                <div class="pay-method__name">Transfer bank</div>
+                <div class="pay-method__detail">BCA ••••4821</div>
+              </div>
+              <span class="ms pay-method__icon">account_balance</span>
+            </div>
+            <span class="link">Kelola metode pembayaran</span>
+            <p class="card__note">
+              Payout dikirim sebagai stablecoin rupiah (IDRX) langsung ke wallet
+              Anda — tanpa perantara bank. Batas pembayaran: 1.000.000 IDRX.
+            </p>
+          </section>
+        </div>
+
+        <section class="card">
+          <h2 class="card__title">Ringkasan transaksi</h2>
+          <table class="ledger">
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Deskripsi</th>
+                <th class="ledger__amount">Jumlah</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1 Okt 2026</td>
+                <td>Saldo akhir September — siap dibayar</td>
+                <td class="ledger__amount">8.400.000 IDRX</td>
+              </tr>
+              <tr>
+                <td>30 Sep 2026</td>
+                <td>Pembayaran bulan Agustus</td>
+                <td class="ledger__amount">7.950.000 IDRX</td>
+              </tr>
+              <tr>
+                <td>31 Okt 2026</td>
+                <td>Perkiraan perolehan Oktober <span class="tag">estimasi</span></td>
+                <td class="ledger__amount">9.214.750 IDRX</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </main>
+
+      <footer class="footer">Demo environment — bukan situs Google yang sebenarnya.</footer>
+    </div>
+
+    <script>
+      fetch('data/payments.json')
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          var fmt = new Intl.NumberFormat('id-ID');
+          var set = function (field, text) {
+            document.querySelectorAll('[data-field="' + field + '"]').forEach(function (el) {
+              el.textContent = text;
+            });
+          };
+          set('balance-final', fmt.format(d.balance_final) + ' ' + d.currency);
+          set('estimate', fmt.format(d.estimate_next) + ' ' + d.currency);
+          set('payout-window', 'Akan dibayarkan ' + d.payout_window);
+          set('payment-id', d.payment_id);
+        })
+        .catch(function () { /* offline fallback: statis di HTML sudah benar */ });
+    </script>
   </body>
 </html>
