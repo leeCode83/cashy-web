@@ -13,15 +13,21 @@ TransGate menyadap request API, bukan HTML — jadi kontrak stabilnya adalah
 
 - **Target intercept**: `GET /data/payments.json` (diload halaman via `fetch`,
   terlihat sebagai XHR di tab Network — persis cara TransGate menangkapnya).
-- `payment_id` → **nullifier** (anti didanai-ganda; di mock ini satu akun
-  demo, jadi semua proof berbagi nilai yang sama — cukup untuk demo).
+- `payment_id` → **nullifier** (anti didanai-ganda). Sejak Okt 2026 nilainya
+  **berputar per bucket 2 menit** (suffix `-B<bucket>`, konstanta `BUCKET_MS`
+  di `api/payments.js`): tiap window demo dapat uHash segar supaya advance
+  bisa diulang tanpa tersangkut registry "payout sudah didanai".
 - `balance_final` → saldo final yang diverifikasi (angka polos, tanpa format).
 - `currency` → `IDRX`.
 - Key lain (`creator_id`, `period`, `payout_window`, `estimate_next`,
   `generated_at`) bebas, tapi jangan dihapus.
 
 Halaman HTML mem-fetch JSON saat load; angka statis di HTML hanyalah fallback
-offline dan harus dibuat identik dengan JSON.
+offline (payment_id fallback bisa berbeda dari yang sedang berputar — hanya
+terlihat saat offline). JSON kini disajikan serverless `api/payments.js`
+(lewat rewrite di `vercel.json` supaya path intercept tetap
+`/data/payments.json`); file statis dihapus karena di Vercel file statis
+menaungi rewrite.
 
 ## Schema JSON untuk zkPass Dev Center
 
@@ -96,7 +102,7 @@ Semua endpoint: header `Authorization: Bearer <apa pun>` wajib (tanpa itu
   `nextPageToken` (maksimal 100 item terbaru yang dihasilkan,
   `pageInfo.totalResults` tetap 1104).
 - Angka Sep 2026 = **8.400.000**, persis `balance_final` di
-  `data/payments.json`, supaya tren bureau dan bukti zkTLS bercerita sama.
+  `api/payments.js`, supaya tren bureau dan bukti zkTLS bercerita sama.
 
 Contoh:
 
@@ -110,6 +116,5 @@ functions secara lokal butuh `vercel dev` (folder `api/` tidak jalan di
 `python -m http.server`); dev loop cashq-webapp bisa langsung fetch URL
 produksi karena CORS terbuka.
 
-File statis lama (`index.html`, `styles.css`, `data/payments.json`) TIDAK
-terkait endpoint ini dan jangan diubah — kontrak zkPass di atas bergantung
-padanya.
+File statis lama (`index.html`, `styles.css`) TIDAK terkait endpoint ini dan
+jangan diubah — kontrak zkPass di atas bergantung padanya.

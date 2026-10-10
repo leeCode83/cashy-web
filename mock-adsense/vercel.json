@@ -1,0 +1,3 @@
+{
+  "rewrites": [{ "source": "/data/payments.json", "destination": "/api/payments" }]
+}
