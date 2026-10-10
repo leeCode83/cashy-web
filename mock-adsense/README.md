@@ -70,3 +70,46 @@ python -m http.server 8080
 
 Cek tab Network: `data/payments.json` harus muncul sebagai XHR dengan
 `Content-Type: application/json`.
+
+## Mock YouTube API (bureau)
+
+Folder `api/` adalah serverless functions Vercel yang meniru **YouTube
+Analytics API v2** dan **YouTube Data API v3** — sumber data bureau system
+CashQ (server-to-server, bukan bagian bukti zkTLS). Logika ada di `lib/`;
+dataset (channel, tren bulanan, ritme upload) ada di `lib/bureau-data.js`.
+
+| Endpoint | Meniru |
+|---|---|
+| `GET /api/youtube/v2/reports` | Analytics API `reports.query` |
+| `GET /api/youtube/v3/channels` | Data API `channels.list` |
+| `GET /api/youtube/v3/playlistItems` | Data API `playlistItems.list` |
+
+Semua endpoint: header `Authorization: Bearer <apa pun>` wajib (tanpa itu
+401 error envelope Google), CORS terbuka `*`, query param asli dihormati
+(`metrics`, `dimensions`, `startDate`, `endDate`, `sort`, `part`, `mine`,
+`maxResults`, `pageToken`). Catatan perilaku sesuai docs asli:
+
+- `reports`: `dimensions=month` hanya menerima bulan, dan **kedua tanggal
+  wajib tanggal 1**; metrik didukung: `views`, `estimatedRevenue`;
+  `currency`/`filters` diterima lalu diabaikan.
+- `playlistItems`: `maxResults` default 5, maks 50; paginasi via
+  `nextPageToken` (maksimal 100 item terbaru yang dihasilkan,
+  `pageInfo.totalResults` tetap 1104).
+- Angka Sep 2026 = **8.400.000**, persis `balance_final` di
+  `data/payments.json`, supaya tren bureau dan bukti zkTLS bercerita sama.
+
+Contoh:
+
+```sh
+curl -H "Authorization: Bearer demo" \
+  "https://cashy-web-mock-adsense.vercel.app/api/youtube/v2/reports?ids=channel==MINE&startDate=2026-04-01&endDate=2026-09-01&metrics=views,estimatedRevenue&dimensions=month"
+```
+
+Test logika tanpa deploy: `node lib/selftest.js` (24 assert). Menjalankan
+functions secara lokal butuh `vercel dev` (folder `api/` tidak jalan di
+`python -m http.server`); dev loop cashq-webapp bisa langsung fetch URL
+produksi karena CORS terbuka.
+
+File statis lama (`index.html`, `styles.css`, `data/payments.json`) TIDAK
+terkait endpoint ini dan jangan diubah — kontrak zkPass di atas bergantung
+padanya.
